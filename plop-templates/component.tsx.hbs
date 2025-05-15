@@ -1,0 +1,19 @@
+// File path: plop-templates/component.tsx.hbs
+
+import React from 'react';
+import styles from './{{pascalCase name}}.module.css';
+
+interface {{properCase name}}Props {
+  // TODO: Define props
+}
+
+const {{properCase name}}: React.FC<{{properCase name}}Props> = (props) => {
+  return (
+    <div className={styles.container}>
+      {/* TODO: Implement component */}
+      <p>{{properCase name}} component</p>
+    </div>
+  );
+};
+
+export default {{properCase name}};
