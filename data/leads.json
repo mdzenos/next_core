@@ -1,0 +1,16 @@
+[
+  {
+    "id": "lead-1",
+    "name": "Công ty A",
+    "email": "a@example.com",
+    "status": "new",
+    "owner": "Anh"
+  },
+  {
+    "id": "lead-2",
+    "name": "Công ty B",
+    "email": "b@example.com",
+    "status": "contacted",
+    "owner": "Bình"
+  }
+]

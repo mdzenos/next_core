@@ -1,0 +1,10 @@
+[
+  {
+    "id": "contact-1",
+    "firstName": "Nguyễn",
+    "lastName": "An",
+    "email": "an@example.com",
+    "phone": "0123456789",
+    "companyId": "acc-1"
+  }
+]
