@@ -1,34 +1,30 @@
-'use server';
-import { z } from 'zod';
+// app/leads/_actions/update.ts
+"use server";
+
 import { db } from '@/lib/db';
+import { updateLeadSchema, UpdateLeadInput } from "../_schemas";
+import { revalidatePath } from "next/cache";
 
-// Schema validate dữ liệu update
-const UpdateLeadSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1),
-  email: z.string().email().optional(),
-  status: z.enum(['new','contacted','qualified','lost']).optional(),
-  owner: z.string().optional()
-});
-
-// Lấy dữ liệu lead theo id (dùng trong update page)
+// Lấy lead theo id
 export async function getLeadById(id: string) {
-  const lead = await db.findById('leads', id);
-  if (!lead) throw new Error('Lead not found');
-  return lead;
+  return db.findById('leads', id);
 }
 
-// Action cập nhật lead
-export async function updateLeadAction(formData: FormData | Record<string, any>) {
-  // Nếu là FormData, convert sang object
-  const values = formData instanceof FormData ? Object.fromEntries(formData) : formData;
+export async function updateLeadAction(raw: UpdateLeadInput) {
+  const result = updateLeadSchema.safeParse(raw);
 
-  // Validate bằng Zod
-  const parsed = UpdateLeadSchema.parse(values);
+  if (!result.success) {
+    return {
+      ok: false,
+      errors: result.error.flatten().fieldErrors, // gửi error cụ thể về client
+    };
+  }
+
+  const lead = result.data;
 
   // Cập nhật DB
-  const updated = await db.update('leads', parsed.id, parsed);
-  if (!updated) throw new Error('Lead not found');
+  await db.update("leads", lead.id, lead);
 
-  return updated;
+  revalidatePath("/leads");
+  return { ok: true };
 }
