@@ -1,16 +1,51 @@
 [
   {
-    "id": "lead-1",
-    "name": "Công ty A",
-    "email": "a@example.com",
-    "status": "new",
-    "owner": "Anhcccczxczx"
+    "id": "cfc885e2-e4bd-4984-8131-1bd3893e59f6",
+    "status": "",
+    "name": "cvx",
+    "email": "xcvxc@cc.cc",
+    "owner": "xcvxc"
   },
   {
-    "id": "lead-2",
-    "name": "Công ty B",
-    "email": "b@example.com",
-    "status": "contacted",
-    "owner": "Bình"
+    "id": "c4432f71-1a87-42a8-bcd4-771760613603",
+    "status": "new",
+    "name": "sdfsd",
+    "email": "czx@dd.xx",
+    "owner": "zxc"
+  },
+  {
+    "id": "fdfd5d7b-e0db-42e3-a4bc-e793f8865922",
+    "status": "new",
+    "name": "cbnb",
+    "email": "xcvx@xczx.xxx",
+    "owner": "zxxczx"
+  },
+  {
+    "id": "15dedc35-047a-49be-9631-fbe641a8beca",
+    "status": "new",
+    "name": "dfgdfg",
+    "email": "gdfgd@aa.cz",
+    "owner": "sdfsd"
+  },
+  {
+    "id": "4d83a3fa-4ad1-474b-ae89-dc7d627d9819",
+    "status": "new",
+    "name": "fghgdhf",
+    "email": "fghfgh@cc.cc",
+    "owner": "ghfg"
+  },
+  {
+    "id": "bad7a7ac-b692-499c-bd53-df45ecb1f5a8",
+    "name": "sad",
+    "email": "fghfgh@cc.cc",
+    "owner": "zczxc",
+    "status": "new"
+  },
+  {
+    "id": "a0e1207a-667f-4017-a29f-7a75753db943",
+    "name": "zzzzzzz",
+    "email": "zzzzzzz@cc.zz",
+    "owner": "zzzzzzzz",
+    "status": "zzzzzzzzzz"
   }
 ]

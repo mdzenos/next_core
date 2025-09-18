@@ -3,15 +3,15 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getLeadById, updateLeadAction } from '../../_actions/update';
-import type { UpdateLeadInput } from '../../_schemas';
+import { getLeadById, updateLeadAction } from '../../actions';
+import { LeadInput, validateAndCheckChanges } from '../../schemas';
 
 export default function UpdateLeadPage({ params }: { params: Promise<{ id: string }> }) {
   // unwrap Promise (Next.js 15 params)
   const { id } = use(params);
   const router = useRouter();
 
-  const [lead, setLead] = useState<UpdateLeadInput | null>(null);
+  const [lead, setLead] = useState<LeadInput | null>(null);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
@@ -40,14 +40,26 @@ export default function UpdateLeadPage({ params }: { params: Promise<{ id: strin
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!lead) return;
 
-    const res = await updateLeadAction({ id: lead.id, name, email, status, owner });
+    // Chuẩn bị input
+    const input: LeadInput = { id: lead.id, name, email, status, owner };
 
+    // Validate + check unchanged
+    const result = validateAndCheckChanges(input, lead);
+    if (!result.ok) {
+      setErrors(result.errors); // hiển thị lỗi trên form
+      return; // dừng submit, không gọi action
+    }
+
+    // Gọi action chỉ khi input hợp lệ và có thay đổi
+    const res = await updateLeadAction(result.data);
     if (!res.ok) {
       setErrors(res.errors ?? {});
       return;
     }
 
+    // Điều hướng về trang list
     router.push('/leads');
   };
 
@@ -62,6 +74,11 @@ export default function UpdateLeadPage({ params }: { params: Promise<{ id: strin
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Update Lead</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-md">
+
+        {("_update" in errors) && (
+          <p className="text-red-500 text-sm mb-2">{errors._update.join(", ")}</p>
+        )}
+
         <div>
           <input
             value={name}
