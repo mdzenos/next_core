@@ -1,12 +1,5 @@
 [
   {
-    "id": "cfc885e2-e4bd-4984-8131-1bd3893e59f6",
-    "status": "",
-    "name": "cvx",
-    "email": "xcvxc@cc.cc",
-    "owner": "xcvxc"
-  },
-  {
     "id": "c4432f71-1a87-42a8-bcd4-771760613603",
     "status": "new",
     "name": "sdfsd",
@@ -40,12 +33,5 @@
     "email": "fghfgh@cc.cc",
     "owner": "zczxc",
     "status": "new"
-  },
-  {
-    "id": "a0e1207a-667f-4017-a29f-7a75753db943",
-    "name": "zzzzzzz",
-    "email": "zzzzzzz@cc.zz",
-    "owner": "zzzzzzzz",
-    "status": "zzzzzzzzzz"
   }
 ]

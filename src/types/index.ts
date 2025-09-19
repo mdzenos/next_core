@@ -1,9 +1,9 @@
+// app/types/index.ts
 export type Lead = {
   id: string;
-  name: string;
-  email?: string;
-  status: "new" | "contacted" | "qualified" | "lost";
-  owner?: string;
+  title: string | null;
+  description: string | null;
+  rating: string | null;
 };
 
 export type Contact = {

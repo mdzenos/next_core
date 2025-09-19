@@ -2,42 +2,45 @@
 import { z } from "zod";
 
 // -----------------------------
-// Schema Lead
+// Schema Lead (create)
 // -----------------------------
 export const leadSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email"),
-  owner: z.string().min(1, "Owner is required"),
-  status: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  rating: z.string().min(1, "Rating is required"),
+});
+
+// -----------------------------
+// Schema Lead Update
+// -----------------------------
+export const leadUpdateSchema = leadSchema.extend({
+  id: z.string().min(1, "ID is required"),
 });
 
 // -----------------------------
 // Types
 // -----------------------------
 export type LeadInput = z.infer<typeof leadSchema>;
+export type LeadUpdateInput = z.infer<typeof leadUpdateSchema>;
 
 // -----------------------------
 // Hàm validate + check unchanged (dành cho UPDATE)
 // -----------------------------
 export function validateAndCheckChanges(
-  input: LeadInput,
-  original: LeadInput
-): { ok: true; data: LeadInput } | { ok: false; errors: Record<string, string[]> } {
-  // Validate với schema
-  const result = leadSchema.safeParse(input);
+  input: LeadUpdateInput,
+  original: LeadUpdateInput
+): { ok: true; data: LeadUpdateInput } | { ok: false; errors: Record<string, string[]> } {
+  const result = leadUpdateSchema.safeParse(input);
   if (!result.success) {
     return { ok: false, errors: result.error.flatten().fieldErrors };
   }
 
   const validated = result.data;
 
-  // Check xem có thay đổi gì không
-  const unchanged =
-    validated.name === original.name &&
-    validated.email === original.email &&
-    validated.status === original.status &&
-    validated.owner === original.owner;
+  // Check thay đổi tự động theo field
+  const unchanged = Object.keys(leadSchema.shape).every((key) => {
+    return validated[key as keyof LeadUpdateInput] === original[key as keyof LeadUpdateInput];
+  });
 
   if (unchanged) {
     return { ok: false, errors: { _update: ["Không có thay đổi gì cần cập nhật!"] } };

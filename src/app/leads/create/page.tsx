@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createLeadAction } from "../actions";
+import { createLeadAction } from "../methods";
 import { LeadInput, validateAndCheckChanges } from "../schemas";
 
 export default function CreateLeadPage() {
