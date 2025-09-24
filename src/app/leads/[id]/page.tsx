@@ -1,36 +1,39 @@
-// app/leads/[id]/page.tsx
-// app/leads/[id]/page.tsx
-import Link from "next/link";
-import { getLeadById } from "../apis";
+"use client";
 
-export default async function LeadDetailPage({ params }: {
-  params: { id: string };
-}) {
-  const { id } = params;
+import { use, useEffect, useState } from "react";
+import { leadsApi } from "../api";
+import LeadDetail from "../_components/LeadDetail";
+import { Lead } from "../schemas";
 
-  try {
-    const lead = await getLeadById(id);
+interface LeadPageProps {
+  params: Promise<{ id: string }>;
+}
 
-    if (!lead) {
-      return <div className="p-6 text-gray-500">Lead not found</div>;
-    }
+export default function LeadPage({ params }: LeadPageProps) {
+  // unwrap params theo gợi ý Next.js
+  const { id } = use(params);
 
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold">{lead.title}</h1>
-        <p>description: {lead?.description ?? "N/A"}</p>
-        <p>rating: {lead?.rating ?? "N/A"}</p>
+  const [lead, setLead] = useState<Lead | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-        <div className="mt-4 flex gap-2">
-          <Link href={`/leads/${id}/update`}>
-            <button className="px-3 py-1 rounded bg-yellow-500 text-white">
-              Edit
-            </button>
-          </Link>
-        </div>
-      </div>
-    );
-  } catch (error) {
-    return <div className="p-6 text-red-500">Failed to load lead</div>;
-  }
+  useEffect(() => {
+    setLoading(true);
+    leadsApi
+      .getOne(id)
+      .then((data) => {
+        setLead(data);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to load lead");
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error || !lead) return <p>{error ?? "Lead not found"}</p>;
+
+  return <LeadDetail lead={lead} />;
 }

@@ -1,5 +1,5 @@
-import '../styles/globals.css';
-import ReduxProvider from '@/stores/store';
+import '!styles/globals.css';
+import ReduxProvider from '!stores/store';
 
 export const metadata = { title: 'CRM Next (Redux)' };
 

@@ -44,7 +44,11 @@ src/
 │   │   ├── create/page.tsx         # Trang tạo
 │   │   │── _services/
 │   │   │   └── lead-service.ts     #
-│   │   └── page.tsx                # Trang danh sách
+│   │   │── actions.tsx             # Trang danh sách
+│   │   │── apis.ts                # Trang danh sách
+│   │   │── loading.tsx                # Trang danh sách
+│   │   │── page.tsx                # Trang danh sách
+│   │   └── schemas.ts              # Trang danh sách
 │   │
 │   ├── layout.tsx                  # Layout gốc bao trùm toàn bộ app (header, footer chung)
 │   └── page.tsx                    # Trang landing page chính, trang đầu tiên của app

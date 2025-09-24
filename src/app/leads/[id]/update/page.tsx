@@ -1,26 +1,14 @@
-// app/leads/[id]/update/page.tsx
-import { getLeadById } from "../../apis";
-import UpdateLeadForm from "../../_components/UpdateLeadForm";
-import { notFound } from "next/navigation";
+import { getLead } from "../../api";
+import LeadForm from "../../_components/LeadForm";
 
-export default async function UpdateLeadPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+type Props = { params: { id: string } };
 
-  try {
-    const lead = await getLeadById(id);
-    if (!lead) return notFound();
-
-    return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Update Lead</h1>
-        <UpdateLeadForm lead={lead} />
-      </div>
-    );
-  } catch (e) {
-    return (
-      <div className="p-6 text-red-500">
-        Failed to load lead detail. Please try again later.
-      </div>
-    );
-  }
+export default async function UpdateLeadPage({ params }: Props) {
+  const lead = await getLead(Number(params.id));
+  return (
+    <main>
+      <h1>Edit Lead</h1>
+      <LeadForm mode="update" lead={lead} />
+    </main>
+  );
 }
