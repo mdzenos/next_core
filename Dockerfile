@@ -1,41 +1,39 @@
 # docker build -t mdzenos/nextjs-core:1.0 .
 # docker push mdzenos/nextjs-core:1.0
-# ===== Builder =====
-FROM node:24-alpine AS builder
 
-# Thư mục làm việc
+# ============ Builder ============
+FROM node:24-slim AS builder
+
 WORKDIR /app
 
-# Copy package và lock file
 COPY package.json package-lock.json ./
+RUN npm ci
 
-# Cài dependencies
-RUN npm install
-
-# Copy toàn bộ code
 COPY . .
-
-# Build Next.js production
 RUN npm run build
 
-# ===== Runner =====
-FROM node:24-alpine AS runner
+# ============ Runner ============
+FROM node:24-slim AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=80
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=512"
 
-# Copy từ builder
+COPY package.json package-lock.json ./
+
+RUN npm ci --omit=dev \
+ && npm cache clean --force \
+ && rm -rf /root/.npm
+
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
 
-# Cài dependencies production
-RUN npm install --omit=dev
+EXPOSE 3000
 
-# Expose port 80
-EXPOSE 80
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
+  CMD node -e "require('http').get('http://localhost:3000', r => process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
 
-# Chạy Next.js trên port 80
-CMD ["npm", "start", "--", "-p", "80"]
+CMD ["node", "node_modules/next/dist/bin/next", "start", "-p", "3000"]

@@ -19,3 +19,7 @@ logs
 .vscode
 .idea
 .DS_Store
+
+.next
+
+README.md

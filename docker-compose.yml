@@ -3,7 +3,7 @@ services:
     image: mdzenos/nextjs-core:1.0
     container_name: nextjs
     ports:
-      - "${PORT:-80}:80"
+      - "${PORT:-3000}:3000"
     environment:
       NODE_ENV: ${NODE_ENV:-production}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://zenos.qzz.io}
