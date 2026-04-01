@@ -1,5 +1,7 @@
 # docker compose --profile prod down && docker compose --profile prod up -d
 # docker logs -f nextjs-prod
+# docker rm -f nextjs-prod
+
 services:
   nextjs-prod:
     image: mdzenos/nextjs-core:1.1
