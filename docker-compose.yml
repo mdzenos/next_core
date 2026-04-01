@@ -1,0 +1,9 @@
+services:
+  nextjs-prod:
+    image: mdzenos/nextjs-core:1.1
+    container_name: nextjs-prod
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
