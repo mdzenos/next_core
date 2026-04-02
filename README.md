@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Cấu trúc
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+nextjs-core/                       # Root project
+├── node_modules/                  # Thư viện npm
+├── public/                        # Thư mục public chứa static assets
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── next.svg
+│   ├── vercel.svg
+│   └── window.svg
+├─ src/                            # Source code chính của ứng dụng
+│  ├─ app/                         # App Router Next.js 16+
+│  │  ├─ layout.tsx                # Root layout bọc toàn app (header/footer/providers)
+│  │  ├─ loading.tsx               # Skeleton loading toàn app khi dữ liệu chưa load
+│  │  ├─ error.tsx                 # Root error boundary (bắt lỗi toàn app)
+│  │  │
+│  │  ├─ auth/                     # Route authentication
+│  │  │  ├─ login/
+│  │  │  │   └─ page.tsx           # Trang Login, client component
+│  │  │  └─ register/
+│  │  │      └─ page.tsx           # Trang Register
+│  │  │
+│  │  ├─ dashboard/                # Route dashboard, cần auth
+│  │  │  ├─ layout.tsx             # Dashboard layout riêng (sidebar + header)
+│  │  │  ├─ page.tsx               # Feed chính của dashboard
+│  │  │  └─ posts/                 # Sub-routes của posts
+│  │  │     ├─ create/
+│  │  │     │   └─ page.tsx        # Tạo post mới
+│  │  │     └─ [postId]/           # Dynamic route postId
+│  │  │         └─ page.tsx        # Chi tiết post
+│  │  │
+│  │  └─ profile/
+│  │      └─ [userId]/             # Dynamic route profile
+│  │          └─ page.tsx          # Trang profile người dùng
+│  │
+│  ├─ components/                  # Atomic Design UI components
+│  │  ├─ atoms/                    # Các component nhỏ nhất, tái sử dụng
+│  │  │   ├─ Button.tsx
+│  │  │   ├─ Input.tsx
+│  │  │   ├─ Avatar.tsx
+│  │  │   └─ Icon.tsx
+│  │  │
+│  │  ├─ molecules/                # Ghép atoms, logic UI cơ bản
+│  │  │   ├─ PostCard.tsx
+│  │  │   ├─ CommentCard.tsx
+│  │  │   ├─ PostForm.tsx
+│  │  │   ├─ Navbar.tsx
+│  │  │   └─ Sidebar.tsx
+│  │  │
+│  │  ├─ organisms/                # Ghép molecules, UI phức tạp
+│  │  │   ├─ Feed.tsx
+│  │  │   ├─ PostList.tsx
+│  │  │   └─ NotificationPanel.tsx
+│  │  │
+│  │  └─ templates/                # Ghép organisms + layout, chuẩn page
+│  │      ├─ ProfileTemplate.tsx
+│  │      └─ DashboardTemplate.tsx
+│  │
+│  ├─ contracts/                   # TypeScript interface/schema
+│  │  ├─ userContract.ts           # Type định nghĩa User
+│  │  └─ postContract.ts           # Type định nghĩa Post
+│  │
+│  ├─ services/                    # Logic business & fetch API
+│  │  ├─ apiService.ts             # Wrapper fetch + error handling + JWT
+│  │  ├─ authService.ts            # Login, register, logout
+│  │  ├─ postService.ts            # CRUD posts
+│  │  └─ profileService.ts         # Fetch profile + posts
+│  │
+│  ├─ utils/                       # Helper functions, constants, format
+│  │  ├─ formatDate.ts
+│  │  ├─ helpers.ts
+│  │  └─ constants.ts
+│  │
+│  └─ middleware.ts                # Middleware auth, check login trước khi vào page
+├── AGENTS.md                       # Document dự án / agents
+├── CLAUDE.md                       # Document dự án / claude
+├── docker-compose.yml               # Docker Compose cấu hình multi-container
+├── Dockerfile                       # Dockerfile Next.js
+├── eslint.config.mjs                # ESLint config
+├── next-env.d.ts                     # Next.js types
+├── next.config.ts                    # Next.js config
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs               # PostCSS config
+├── README.md
+└── tsconfig.json                    # TypeScript config
+```

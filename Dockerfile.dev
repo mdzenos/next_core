@@ -1,0 +1,16 @@
+# Dockerfile.dev
+FROM mdzenos/nextjs-core:1.1
+
+WORKDIR /app
+
+# Cài node_modules (cached layer)
+COPY package*.json ./
+RUN npm ci
+
+# Source code mount trực tiếp từ host → hot reload
+# COPY . .  # Không cần, dev mount volume rồi
+
+CMD ["npm", "run", "dev"]
+
+# docker build --no-cache -t mdzenos/nextjs-core:1.1-dev -f Dockerfile.dev .
+# docker push mdzenos/nextjs-core:1.1-dev
