@@ -1,11 +1,12 @@
-import type { Metadata } from 'next';
+// src/app/(public)/auth/register/page.tsx
+import { buildMetadata } from '@/lib/metadata';
 import AuthTemplate from '@/components/templates/AuthTemplate';
 import RegisterForm from '@/components/molecules/RegisterForm';
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: 'Đăng ký',
   description: 'Tạo tài khoản mới trong hệ thống NextJS Core',
-};
+});
 
 export default function RegisterPage() {
   return (

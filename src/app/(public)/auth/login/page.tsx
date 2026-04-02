@@ -1,11 +1,12 @@
-import type { Metadata } from 'next';
+
+import { buildMetadata } from '@/lib/metadata';
 import AuthTemplate from '@/components/templates/AuthTemplate';
 import LoginForm from '@/components/molecules/LoginForm';
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: 'Đăng nhập',
   description: 'Đăng nhập vào hệ thống NextJS Core',
-};
+});
 
 export default function LoginPage() {
   return (
