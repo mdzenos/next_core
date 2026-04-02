@@ -1,7 +1,3 @@
-# docker compose --profile prod down && docker compose --profile prod up -d
-# docker logs -f nextjs-prod
-# docker rm -f nextjs-prod
-
 services:
   nextjs-prod:
     image: mdzenos/nextjs-core:1.1
@@ -13,9 +9,8 @@ services:
     restart: unless-stopped
     profiles:
       - prod
-
   nextjs-dev:
-    image: node:24-slim
+    image: mdzenos/nextjs-core:1.1-dev
     container_name: nextjs-dev
     working_dir: /app
     ports:
@@ -26,7 +21,13 @@ services:
     volumes:
       - .:/app
       - node_modules:/app/node_modules
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm ci && npm run dev"
     restart: unless-stopped
     profiles:
       - dev
+volumes:
+  node_modules: {}
+
+# docker compose --profile prod down && docker compose --profile prod up -d
+# docker logs -f nextjs-prod
+# docker rm -f nextjs-prod
