@@ -1,12 +1,12 @@
 // src/app/(public)/layout.tsx
-import type { Metadata } from 'next';
 // import AuthTemplate from '@/components/templates/AuthTemplate';
+import { buildMetadata } from '@/lib/metadata';
 import PublicTemplate from '@/components/templates/PublicTemplate';
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: 'Trang chủ',
-  description: 'Trang chủ của ứng dụng NextJS Social Dashboard',
-};
+  description: 'Ứng dụng NextJS Core',
+});
 
 export default function PublicLayout({
   children,

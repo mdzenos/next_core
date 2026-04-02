@@ -1,11 +1,11 @@
-// src/app/dashboard/layout.tsx
-import type { Metadata } from 'next';
+// src/app/(protected)/dashboard/layout.tsx
+import { buildMetadata } from '@/lib/metadata';
 import DashboardTemplate from '@/components/templates/DashboardTemplate';
 
-export const metadata: Metadata = {
+export const metadata = buildMetadata({
   title: 'Dashboard',
-  description: 'Khu vực dashboard của ứng dụng NextJS Core',
-};
+  description: 'Trang dashboard của ứng dụng NextJS Core',
+});
 
 export default function DashboardLayout({
   children,

@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
-
 export default function AuthPage() {
   // chuyển hướn đến trang login khi truy cập vào /auth
   redirect('/auth/login');

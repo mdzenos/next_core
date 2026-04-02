@@ -1,13 +1,8 @@
 // src/app/layout.tsx
 import '@/styles/globals.css';
-import type { Metadata } from 'next';
+import { buildRootMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-  title: {
-    default: 'Trang chủ',
-    template: '%s | NextJS Core',
-  },
-  description: 'Ứng dụng NextJS Core',
+export const metadata = buildRootMetadata({
   icons: {
     icon: [
       {
@@ -29,7 +24,7 @@ export const metadata: Metadata = {
     shortcut: '/favicons/icons8-next.js-gradient-32.ico',
     apple: '/favicons/icons8-next.js-gradient-96.ico',
   },
-};
+});
 
 export default function RootLayout({
   children,
