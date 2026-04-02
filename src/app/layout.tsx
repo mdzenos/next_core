@@ -1,4 +1,35 @@
+// src/app/layout.tsx
 import '@/styles/globals.css';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Trang chủ',
+    template: '%s | NextJS Core',
+  },
+  description: 'Ứng dụng NextJS Core',
+  icons: {
+    icon: [
+      {
+        url: '/favicons/icons8-next.js-gradient-16.ico',
+        sizes: '16x16',
+        type: 'image/x-icon',
+      },
+      {
+        url: '/favicons/icons8-next.js-gradient-32.ico',
+        sizes: '32x32',
+        type: 'image/x-icon',
+      },
+      {
+        url: '/favicons/icons8-next.js-gradient-96.ico',
+        sizes: '96x96',
+        type: 'image/x-icon',
+      },
+    ],
+    shortcut: '/favicons/icons8-next.js-gradient-32.ico',
+    apple: '/favicons/icons8-next.js-gradient-96.ico',
+  },
+};
 
 export default function RootLayout({
   children,
