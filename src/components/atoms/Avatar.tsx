@@ -1,21 +1,23 @@
-// src/components/atoms/Avatar.tsx
-'use client';
-import Image from 'next/image';
+type AvatarProps = {
+  name: string;
+  imageUrl?: string;
+};
 
-interface AvatarProps {
-  src: string;
-  size?: number;       // Kích thước avatar (px), default 40
-  alt?: string;
-}
+export default function Avatar({ name, imageUrl }: AvatarProps) {
+  if (imageUrl) {
+    return <img src={imageUrl} alt={name} className="h-10 w-10 rounded-full object-cover" />;
+  }
 
-export default function Avatar({ src, size = 40, alt = 'avatar' }: AvatarProps) {
+  const initials = name
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
   return (
-    <Image
-      src={src}
-      width={size}
-      height={size}
-      alt={alt}
-      className="rounded-full object-cover border-2 border-yellow-400 shadow-sm"
-    />
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white">
+      {initials}
+    </div>
   );
 }

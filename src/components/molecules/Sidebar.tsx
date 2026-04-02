@@ -5,26 +5,26 @@ import { HomeIcon, PlusCircleIcon, UserIcon } from '@heroicons/react/24/outline'
 
 const menuItems = [
   { label: 'Feed', href: '/dashboard', icon: HomeIcon },
-  { label: 'Create Post', href: '/dashboard/posts/create', icon: PlusCircleIcon },
-  { label: 'Profile', href: '/profile/u1', icon: UserIcon },
+  { label: 'New Post', href: '/dashboard/posts/create', icon: PlusCircleIcon },
+  { label: 'Profile', href: '/profile/1', icon: UserIcon },
 ];
 
 export default function Sidebar() {
   return (
-    <aside className="w-72 bg-white shadow-lg min-h-screen p-6 flex flex-col">
-      <h2 className="text-2xl font-bold text-yellow-600 mb-8">Social Dashboard</h2>
-      <nav className="flex flex-col space-y-4">
-        {menuItems.map(({ label, href, icon: Icon }) => (
+    <nav className="flex flex-col h-full p-4 space-y-2">
+      {menuItems.map((item) => {
+        const Icon = item.icon;
+        return (
           <Link
-            key={href}
-            href={href}
-            className="flex items-center space-x-3 p-3 rounded hover:bg-yellow-50 transition"
+            key={item.href}
+            href={item.href}
+            className="flex items-center px-3 py-2 rounded hover:bg-darkBlue2 transition"
           >
-            <Icon className="h-5 w-5 text-yellow-500" />
-            <span className="font-medium text-gray-800">{label}</span>
+            <Icon className="h-5 w-5 mr-3" />
+            {item.label}
           </Link>
-        ))}
-      </nav>
-    </aside>
+        );
+      })}
+    </nav>
   );
 }

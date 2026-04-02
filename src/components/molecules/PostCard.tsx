@@ -1,5 +1,5 @@
 'use client';
-import { Post } from '@/contracts/postContract';
+import { Post } from '@/types/postContract';
 import Avatar from '@/components/atoms/Avatar';
 import Button from '@/components/atoms/Button';
 
