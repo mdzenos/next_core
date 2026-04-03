@@ -2,17 +2,20 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import AuthMessage from '@/components/atoms/AuthMessage';
+import Button from '@/components/atoms/Button';
+import AuthFormMessage from '@/components/molecules/AuthFormMessage';
 import { setAccessToken, setCurrentUser } from '@/lib/auth-store';
-import { login, type LoginPayload } from '@/services/authService';
+import { register, type RegisterPayload } from '@/services/authService';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState<LoginPayload>({
+  const [formData, setFormData] = useState<RegisterPayload>({
+    fullName: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
@@ -34,7 +37,7 @@ export default function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await login(formData, {
+      const response = await register(formData, {
         timeoutMs: 10000,
       });
 
@@ -43,7 +46,7 @@ export default function LoginForm() {
       setAccessToken(authData.accessToken);
       setCurrentUser(authData.user);
 
-      setMessage(`Xin chào ${authData.user.fullName}, đăng nhập thành công.`);
+      setMessage(`Xin chào ${authData.user.fullName}, đăng ký thành công.`);
 
       router.push('/dashboard');
       router.refresh();
@@ -57,6 +60,22 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      <div>
+        <label htmlFor="fullName" className="mb-2 block text-sm font-medium text-gray-700">
+          Họ và tên
+        </label>
+        <input
+          id="fullName"
+          name="fullName"
+          type="text"
+          placeholder="Nguyễn Văn A"
+          value={formData.fullName}
+          onChange={handleChange}
+          className="w-full rounded-xl border border-Zcolor3 px-4 py-3 outline-none transition focus:border-Zcolor13 focus:ring-2 focus:ring-Zcolor4"
+          required
+        />
+      </div>
+
       <div>
         <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
           Email
@@ -89,15 +108,27 @@ export default function LoginForm() {
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="inline-flex w-full items-center justify-center rounded-xl bg-Zcolor13 px-6 py-3 text-sm font-semibold text-white transition hover:bg-Zcolor14 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {isSubmitting ? 'Đang xử lý...' : 'Đăng nhập'}
-      </button>
+      <div>
+        <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-gray-700">
+          Xác nhận mật khẩu
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          placeholder="••••••••"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          className="w-full rounded-xl border border-Zcolor3 px-4 py-3 outline-none transition focus:border-Zcolor13 focus:ring-2 focus:ring-Zcolor4"
+          required
+        />
+      </div>
 
-      <AuthMessage message={message} isError={isError} />
+      <Button type="submit" className="w-full" disabled={isSubmitting} isLoading={isSubmitting}>
+        {isSubmitting ? 'Đang xử lý...' : 'Đăng ký'}
+      </Button>
+
+      <AuthFormMessage message={message} isError={isError} />
     </form>
   );
 }

@@ -1,15 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import DashboardFooter from '@/components/organisms/DashboardFooter';
-import DashboardHeader from '@/components/organisms/DashboardHeader';
-import DashboardSidebar from '@/components/organisms/DashboardSidebar';
+import DashboardFooter from '@/components/organisms/Dashboard/DashboardFooter';
+import DashboardHeader from '@/components/organisms/Dashboard/DashboardHeader';
+import DashboardSidebar from '@/components/organisms/Dashboard/DashboardSidebar';
 
-export default function DashboardTemplate({
-  children,
-}: Readonly<{
+type DashboardTemplateProps = Readonly<{
   children: React.ReactNode;
-}>) {
+}>;
+
+export default function DashboardTemplate({ children }: DashboardTemplateProps) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (

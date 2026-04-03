@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ReactNode, MouseEventHandler } from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
+import Spinner from '@/components/atoms/Spinner';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -13,6 +14,7 @@ type ButtonProps = {
   className?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
+  isLoading?: boolean;
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -36,8 +38,11 @@ export default function Button({
   className = '',
   onClick,
   disabled = false,
+  isLoading = false,
 }: ButtonProps) {
-  const classes = `inline-flex items-center justify-center rounded-xl font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+  const isDisabled = disabled || isLoading;
+
+  const classes = `inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
   if (href) {
     return (
@@ -48,7 +53,8 @@ export default function Button({
   }
 
   return (
-    <button type={type} className={classes} onClick={onClick} disabled={disabled}>
+    <button type={type} className={classes} onClick={onClick} disabled={isDisabled}>
+      {isLoading ? <Spinner size="sm" className="text-current" /> : null}
       {children}
     </button>
   );

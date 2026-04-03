@@ -28,6 +28,7 @@ export default function AuthTemplate({
 
       <div className="mt-6 text-center text-sm text-gray-600">
         <span>{footerText} </span>
+
         {footerLinkHref && footerLinkLabel ? (
           <Link
             href={footerLinkHref}

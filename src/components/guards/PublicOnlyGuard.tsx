@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getAccessToken } from '@/lib/auth-store';
-import { getMe, refreshSession } from '@/services/authSessionService';
+import GuardLoading from '@/components/guards/GuardLoading';
+import { checkAuthenticatedSession } from '@/lib/check-auth-session';
 
 type PublicOnlyGuardProps = {
   children: React.ReactNode;
@@ -19,43 +19,39 @@ export default function PublicOnlyGuard({
   const [canView, setCanView] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function checkAuth() {
       try {
-        const token = getAccessToken();
+        const authenticated = await checkAuthenticatedSession();
 
-        if (token) {
-          const me = await getMe();
+        if (!isMounted) return;
 
-          if (me) {
-            router.replace(redirectTo);
-            return;
-          }
-        }
-
-        const refreshed = await refreshSession();
-
-        if (refreshed) {
+        if (authenticated) {
           router.replace(redirectTo);
           return;
         }
 
         setCanView(true);
       } catch {
+        if (!isMounted) return;
         setCanView(true);
       } finally {
-        setIsChecking(false);
+        if (isMounted) {
+          setIsChecking(false);
+        }
       }
     }
 
     checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, [redirectTo, router]);
 
   if (isChecking) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center text-sm text-white/80">
-        Đang kiểm tra phiên đăng nhập...
-      </div>
-    );
+    return <GuardLoading textClassName="text-white/80" />;
   }
 
   if (!canView) {
