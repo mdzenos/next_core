@@ -64,11 +64,12 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
             <div className="flex items-center gap-3">
               <UserMenu
                 fullName={currentUser?.fullName ?? 'Người dùng'}
-                email={currentUser?.email ?? ''}
+                // email={currentUser?.email ?? ''}
                 profileHref="/profile"
                 dashboardHref="/dashboard"
                 showDashboardLink
                 onLogout={handleLogout}
+                userInfoClassName="hidden text-right sm:block"
               />
             </div>
           )}

@@ -17,6 +17,8 @@ type UserMenuProps = {
   showDashboardLink?: boolean;
   onLogout: () => Promise<void> | void;
   logoutLabel?: string;
+  userInfoClassName?: string;
+  buttonClassName?: string;
 };
 
 export default function UserMenu({
@@ -27,6 +29,8 @@ export default function UserMenu({
   showDashboardLink = false,
   onLogout,
   logoutLabel = 'Đăng xuất',
+  userInfoClassName = 'text-right',
+  buttonClassName = 'flex items-center gap-3 rounded-full px-2 py-1 transition hover:bg-white/10',
 }: UserMenuProps) {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -71,12 +75,12 @@ export default function UserMenu({
       <button
         type="button"
         onClick={() => setIsMenuOpen((prev) => !prev)}
-        className="flex items-center gap-3 rounded-full px-2 py-1 transition hover:bg-white/10"
+        className={buttonClassName}
         aria-label="Mở menu tài khoản"
         aria-expanded={isMenuOpen}
         aria-haspopup="menu"
       >
-        <div className="text-right">
+        <div className={userInfoClassName}>
           <p className="text-sm font-medium">{fullName}</p>
           {email ? <p className="text-xs text-white/80">{email}</p> : null}
         </div>

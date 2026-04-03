@@ -57,7 +57,7 @@ export default function DashboardHeader({
 
         <UserMenu
           fullName={currentUser?.fullName ?? 'Người dùng'}
-          email={currentUser?.email ?? ''}
+          // email={currentUser?.email ?? ''}
           onLogout={handleLogout}
         />
       </div>
