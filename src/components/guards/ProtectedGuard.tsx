@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { getAccessToken } from '@/lib/auth-store';
-import { getMe, refreshSession } from '@/services/authSessionService';
+import GuardLoading from '@/components/guards/GuardLoading';
+import { checkAuthenticatedSession } from '@/lib/check-auth-session';
 
 type ProtectedGuardProps = {
   children: React.ReactNode;
@@ -19,22 +19,15 @@ export default function ProtectedGuard({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function checkAuth() {
       try {
-        const token = getAccessToken();
+        const authenticated = await checkAuthenticatedSession();
 
-        if (token) {
-          const me = await getMe();
+        if (!isMounted) return;
 
-          if (me) {
-            setIsAuthenticated(true);
-            return;
-          }
-        }
-
-        const refreshed = await refreshSession();
-
-        if (refreshed) {
+        if (authenticated) {
           setIsAuthenticated(true);
           return;
         }
@@ -42,22 +35,25 @@ export default function ProtectedGuard({
         setIsAuthenticated(false);
         router.replace(redirectTo);
       } catch {
+        if (!isMounted) return;
         setIsAuthenticated(false);
         router.replace(redirectTo);
       } finally {
-        setIsChecking(false);
+        if (isMounted) {
+          setIsChecking(false);
+        }
       }
     }
 
     checkAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, [redirectTo, router]);
 
   if (isChecking) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center bg-Zcolor1 text-sm text-Zcolor12">
-        Đang kiểm tra phiên đăng nhập...
-      </div>
-    );
+    return <GuardLoading className="bg-Zcolor1" textClassName="text-Zcolor12" />;
   }
 
   if (!isAuthenticated) {

@@ -1,4 +1,5 @@
 'use client';
+
 import Link from 'next/link';
 import { HomeIcon, PlusCircleIcon, UserIcon } from '@heroicons/react/24/outline';
 
@@ -13,6 +14,7 @@ export default function Sidebar() {
     <nav className="flex h-full flex-col space-y-2 p-4">
       {menuItems.map((item) => {
         const Icon = item.icon;
+
         return (
           <Link
             key={item.href}

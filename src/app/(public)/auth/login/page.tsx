@@ -1,7 +1,7 @@
 // src/app/(public)/auth/login/page.tsx
 import { buildMetadata } from '@/lib/metadata';
 import AuthTemplate from '@/components/templates/AuthTemplate';
-import LoginForm from '@/components/molecules/LoginForm';
+import LoginForm from '@/components/organisms/Auth/LoginForm';
 import PublicOnlyGuard from '@/components/guards/PublicOnlyGuard';
 
 export const metadata = buildMetadata({
