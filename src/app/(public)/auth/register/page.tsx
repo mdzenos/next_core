@@ -2,6 +2,7 @@
 import { buildMetadata } from '@/lib/metadata';
 import AuthTemplate from '@/components/templates/AuthTemplate';
 import RegisterForm from '@/components/molecules/RegisterForm';
+import PublicOnlyGuard from '@/components/guards/PublicOnlyGuard';
 
 export const metadata = buildMetadata({
   title: 'Đăng ký',
@@ -10,14 +11,16 @@ export const metadata = buildMetadata({
 
 export default function RegisterPage() {
   return (
-    <AuthTemplate
-      title="Tạo tài khoản mới"
-      description="Đăng ký để bắt đầu sử dụng social dashboard và trải nghiệm đầy đủ các tính năng."
-      footerText="Đã có tài khoản?"
-      footerLinkHref="/auth/login"
-      footerLinkLabel="Đăng nhập"
-    >
-      <RegisterForm />
-    </AuthTemplate>
+    <PublicOnlyGuard>
+      <AuthTemplate
+        title="Tạo tài khoản mới"
+        description="Đăng ký để bắt đầu sử dụng social dashboard và trải nghiệm đầy đủ các tính năng."
+        footerText="Đã có tài khoản?"
+        footerLinkHref="/auth/login"
+        footerLinkLabel="Đăng nhập"
+      >
+        <RegisterForm />
+      </AuthTemplate>
+    </PublicOnlyGuard>
   );
 }

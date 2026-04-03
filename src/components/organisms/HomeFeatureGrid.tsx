@@ -22,11 +22,7 @@ export default function HomeFeatureGrid() {
   return (
     <section className="grid gap-4 md:grid-cols-3">
       {features.map((feature) => (
-        <FeatureCard
-          key={feature.title}
-          title={feature.title}
-          description={feature.description}
-        />
+        <FeatureCard key={feature.title} title={feature.title} description={feature.description} />
       ))}
     </section>
   );

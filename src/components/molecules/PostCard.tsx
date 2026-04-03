@@ -9,12 +9,12 @@ interface PostCardProps {
 
 export default function PostCard({ post }: PostCardProps) {
   return (
-    <div className="bg-white border rounded-lg p-4 shadow-sm mb-4">
-      <div className="flex items-center mb-2">
+    <div className="mb-4 rounded-lg border border-Zcolor3 bg-white p-4 shadow-sm">
+      <div className="mb-2 flex items-center">
         <Avatar name={post.author.name} imageUrl={post.author.avatar} />
         <p className="ml-2 font-semibold text-gray-800">{post.author.name}</p>
       </div>
-      <p className="text-gray-700 mb-2">{post.content}</p>
+      <p className="mb-2 text-gray-700">{post.content}</p>
       <Button>Like</Button>
     </div>
   );

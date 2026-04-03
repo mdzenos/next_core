@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import DashboardFooter from '@/components/organisms/DashboardFooter';
 import DashboardHeader from '@/components/organisms/DashboardHeader';
 import DashboardSidebar from '@/components/organisms/DashboardSidebar';
-import DashboardFooter from '@/components/organisms/DashboardFooter';
 
 export default function DashboardTemplate({
   children,
@@ -14,7 +14,7 @@ export default function DashboardTemplate({
 
   return (
     <div
-      className={`grid min-h-screen bg-gray-50 transition-all duration-300 ${
+      className={`grid min-h-screen bg-Zcolor1 transition-all duration-300 ${
         isSidebarCollapsed
           ? 'grid-cols-[88px_1fr] grid-rows-[64px_1fr_56px]'
           : 'grid-cols-[260px_1fr] grid-rows-[64px_1fr_56px]'
@@ -27,14 +27,12 @@ export default function DashboardTemplate({
         />
       </header>
 
-      <aside className="border-r bg-white">
+      <aside className="border-r border-Zcolor3 bg-white">
         <DashboardSidebar isCollapsed={isSidebarCollapsed} />
       </aside>
 
-      <main className="bg-gray-50 p-6">
-        <div className="rounded-xl border bg-white p-6 shadow-sm">
-          {children}
-        </div>
+      <main className="bg-Zcolor1 p-6">
+        <div className="rounded-2xl border border-Zcolor3 bg-white p-6 shadow-sm">{children}</div>
       </main>
 
       <footer className="col-span-2">

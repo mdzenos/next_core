@@ -2,6 +2,7 @@
 // import AuthTemplate from '@/components/templates/AuthTemplate';
 import { buildMetadata } from '@/lib/metadata';
 import PublicTemplate from '@/components/templates/PublicTemplate';
+// import PublicOnlyGuard from '@/components/guards/PublicOnlyGuard';
 
 export const metadata = buildMetadata({
   title: 'Trang chủ',
@@ -13,5 +14,9 @@ export default function PublicLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <PublicTemplate>{children}</PublicTemplate>;
+  return (
+    // <PublicOnlyGuard>
+      <PublicTemplate>{children}</PublicTemplate>
+    // </PublicOnlyGuard>
+  );
 }

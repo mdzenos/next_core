@@ -8,8 +8,8 @@ export default function FeatureCard({
   description,
 }: FeatureCardProps) {
   return (
-    <div className="rounded-2xl bg-gray-50 p-6">
-      <h3 className="text-lg font-semibold text-primary">{title}</h3>
+    <div className="rounded-2xl bg-Zcolor1 p-6">
+      <h3 className="text-lg font-semibold text-Zcolor13">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-gray-600">{description}</p>
     </div>
   );

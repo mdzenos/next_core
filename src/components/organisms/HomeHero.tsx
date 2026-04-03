@@ -7,7 +7,7 @@ export default function HomeHero() {
       <div className="mx-auto max-w-3xl text-center">
         <Badge>Next.js 16 + React 19 + Tailwind CSS v4</Badge>
 
-        <h1 className="mt-6 text-4xl font-bold tracking-tight text-primary md:text-5xl">
+        <h1 className="mt-6 text-4xl font-bold tracking-tight text-Zcolor13 md:text-5xl">
           Social Dashboard / Mini Social Media Platform
         </h1>
 
