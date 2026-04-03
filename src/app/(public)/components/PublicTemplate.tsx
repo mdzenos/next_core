@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { UserMenu } from '@/components/molecules';
 import { getCurrentUser } from '@/lib/auth-store';
-import { logoutSession } from '@/services/authSessionService';
+import { logout } from '@/app/(public)/auth/apiServices';
 
 type PublicTemplateProps = {
   children: React.ReactNode;
@@ -30,7 +30,7 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
   }
 
   async function handleLogout() {
-    await logoutSession();
+    await logout();
     setCurrentUser(null);
     router.replace('/');
     router.refresh();

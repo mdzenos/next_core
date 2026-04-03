@@ -1,13 +1,6 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { logoutSessionForServer } from '@/services/authSessionService';
 
 export async function POST() {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get('refreshToken')?.value;
-
-  await logoutSessionForServer(refreshToken);
-
   const response = NextResponse.json({ success: true });
 
   response.cookies.set('refreshToken', '', {

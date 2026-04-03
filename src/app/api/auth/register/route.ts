@@ -1,50 +1,12 @@
 import { errorResponse, validationErrorResponse, successResponse } from '@/lib/api-response-next';
-import { ApiError } from '@/services/api';
-import { registerForServer } from '@/services/authService';
+import { mockRegister, MockHttpError } from '@/mock/handlers/auth.mock';
 
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    const fullName = body?.fullName?.trim();
-    const email = body?.email?.trim();
-    const password = body?.password;
-    const confirmPassword = body?.confirmPassword;
-
-    const errors: string[] = [];
-
-    if (!fullName) {
-      errors.push('Chưa nhập tên khách hàng!');
-    }
-
-    if (!email) {
-      errors.push('Chưa nhập email!');
-    }
-
-    if (!password) {
-      errors.push('Chưa nhập mật khẩu!');
-    }
-
-    if (!confirmPassword) {
-      errors.push('Chưa nhập mật khẩu xác nhận!');
-    }
-
-    if (password && confirmPassword && password !== confirmPassword) {
-      errors.push('Mật khẩu xác nhận không khớp!');
-    }
-
-    if (errors.length > 0) {
-      return validationErrorResponse(errors, errors[0], 403);
-    }
-
-    const result = await registerForServer({
-      fullName,
-      email,
-      password,
-      confirmPassword,
-    });
+    const result = mockRegister(body);
 
     const response = successResponse(
       {
@@ -71,11 +33,15 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('POST /api/auth/register error:', error);
 
-    if (error instanceof ApiError) {
+    if (error instanceof MockHttpError) {
+      if (error.status === 422) {
+        return validationErrorResponse(error.data, error.message, 422);
+      }
+
       return errorResponse({
         message: error.message,
         status: error.status,
-        data: Array.isArray(error.data) ? error.data : [error.message],
+        data: error.data,
       });
     }
 

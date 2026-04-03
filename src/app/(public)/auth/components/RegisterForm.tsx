@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button, Input } from '@/components/atoms';
 import { AuthFormMessage, FormField } from '@/components/molecules';
-import { register, type RegisterPayload } from '@/services/authService';
+import { register, type RegisterPayload } from '@/app/(public)/auth/apiServices';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
 export default function RegisterForm() {

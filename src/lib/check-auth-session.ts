@@ -1,6 +1,6 @@
 // src/lib/check-auth-session.ts
 import { getAccessToken } from '@/lib/auth-store';
-import { getMe, refreshSession } from '@/services/authSessionService';
+import { getMe } from '@/app/(public)/auth/apiServices';
 
 export async function checkAuthenticatedSession(): Promise<boolean> {
   const token = getAccessToken();
@@ -10,6 +10,5 @@ export async function checkAuthenticatedSession(): Promise<boolean> {
     if (me) return true;
   }
 
-  const refreshed = await refreshSession();
-  return !!refreshed;
+  return false;
 }

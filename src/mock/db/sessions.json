@@ -1,0 +1,9 @@
+[
+  {
+    "userId": "u1",
+    "accessToken": "mock-access-admin",
+    "refreshToken": "mock-refresh-admin",
+    "accessTokenExpiresAt": 1893456000000,
+    "refreshTokenExpiresAt": 1894060800000
+  }
+]

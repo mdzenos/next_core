@@ -1,24 +1,12 @@
 import { errorResponse, successResponse } from '@/lib/api-response-next';
-import { ApiError } from '@/services/api';
-import { loginForServer } from '@/services/authService';
+import { mockLogin, MockHttpError } from '@/mock/handlers/auth.mock';
 
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = body?.email?.trim();
-    const password = body?.password;
-
-    if (!email || !password) {
-      return errorResponse({
-        message: 'Email và mật khẩu là bắt buộc',
-        status: 400,
-        data: ['Email và mật khẩu là bắt buộc'],
-      });
-    }
-
-    const result = await loginForServer({ email, password });
+    const result = mockLogin(body);
 
     const response = successResponse(
       {
@@ -45,11 +33,11 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('POST /api/auth/login error:', error);
 
-    if (error instanceof ApiError) {
+    if (error instanceof MockHttpError) {
       return errorResponse({
         message: error.message,
         status: error.status,
-        data: Array.isArray(error.data) ? error.data : [error.message],
+        data: error.data,
       });
     }
 

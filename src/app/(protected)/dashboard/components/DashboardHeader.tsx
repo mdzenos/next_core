@@ -7,7 +7,7 @@ import { Bars3Icon, BellIcon, MagnifyingGlassIcon } from '@heroicons/react/24/ou
 import { IconButton } from '@/components/atoms';
 import { UserMenu } from '@/components/molecules';
 import { getCurrentUser } from '@/lib/auth-store';
-import { logoutSession } from '@/services/authSessionService';
+import { logout } from '@/app/(public)/auth/apiServices';
 
 type DashboardHeaderProps = {
   isSidebarCollapsed: boolean;
@@ -22,7 +22,7 @@ export default function DashboardHeader({
   const [currentUser, setCurrentUser] = useState(() => getCurrentUser());
 
   async function handleLogout() {
-    await logoutSession();
+    await logout();
     setCurrentUser(null);
     router.replace('/auth/login');
     router.refresh();

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { refreshSession } from '@/services/authSessionService';
+import { getMe } from '@/app/(public)/auth/apiServices';
 
 export function useAuth() {
   const [loading, setLoading] = useState(true);
@@ -10,9 +10,9 @@ export function useAuth() {
   useEffect(() => {
     async function init() {
       try {
-        const refreshed = await refreshSession();
+        const profile = await getMe();
 
-        if (!refreshed) {
+        if (!profile) {
           setAuthenticated(false);
           return;
         }
