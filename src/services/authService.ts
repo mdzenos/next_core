@@ -1,5 +1,8 @@
-import { api, type ApiRequestOptions } from '@/services/api';
-import type { ApiResponse } from '@/types/api';
+export type SafeUser = {
+  id: string;
+  fullName: string;
+  email: string;
+};
 
 export type LoginPayload = {
   email: string;
@@ -13,39 +16,61 @@ export type RegisterPayload = {
   confirmPassword: string;
 };
 
-export type SafeUser = {
-  id: string;
-  fullName: string;
-  email: string;
+export type AuthResponseData = {
+  user: SafeUser;
+  accessToken: string;
+  accessTokenExpiresAt: number;
 };
 
-type AuthRequestOptions = Omit<
-  ApiRequestOptions,
-  'method' | 'body' | 'methodOverride'
->;
+export type ApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+};
 
-const API_PREFIX = process.env.NEXT_PUBLIC_API_URL || '';
+type RequestOptions = {
+  timeoutMs?: number;
+};
 
-function buildApiUrl(path: string) {
-  return `${API_PREFIX}${path}`;
+async function postJson<T>(
+  url: string,
+  body: unknown,
+  options?: RequestOptions,
+): Promise<ApiResponse<T>> {
+  const controller = new AbortController();
+  const timeoutMs = options?.timeoutMs ?? 10000;
+
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw result;
+    }
+
+    return result;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
-export const authService = {
-  login(payload: LoginPayload, options?: AuthRequestOptions) {
-    return api.post<ApiResponse<SafeUser>>(
-      buildApiUrl('/api/auth/login'),
-      payload,
-      options
-    );
-  },
+export function login(payload: LoginPayload, options?: RequestOptions) {
+  return postJson<AuthResponseData>('/api/auth/login', payload, options);
+}
 
-  register(payload: RegisterPayload, options?: AuthRequestOptions) {
-    return api.post<ApiResponse<SafeUser>>(
-      buildApiUrl('/api/auth/register'),
-      payload,
-      options
-    );
-  },
-};
-
-export const { login, register } = authService;
+export function register(payload: RegisterPayload, options?: RequestOptions) {
+  return postJson<AuthResponseData>('/api/auth/register', payload, options);
+}

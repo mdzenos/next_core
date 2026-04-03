@@ -1,4 +1,3 @@
-// src/components/molecules/Sidebar.tsx
 'use client';
 import Link from 'next/link';
 import { HomeIcon, PlusCircleIcon, UserIcon } from '@heroicons/react/24/outline';
@@ -11,16 +10,16 @@ const menuItems = [
 
 export default function Sidebar() {
   return (
-    <nav className="flex flex-col h-full p-4 space-y-2">
+    <nav className="flex h-full flex-col space-y-2 p-4">
       {menuItems.map((item) => {
         const Icon = item.icon;
         return (
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-center px-3 py-2 rounded hover:bg-darkBlue2 transition"
+            className="flex items-center rounded px-3 py-2 text-Zcolor14 transition hover:bg-Zcolor12 hover:text-white"
           >
-            <Icon className="h-5 w-5 mr-3" />
+            <Icon className="mr-3 h-5 w-5" />
             {item.label}
           </Link>
         );

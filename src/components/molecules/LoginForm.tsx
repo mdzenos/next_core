@@ -1,11 +1,15 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import AuthMessage from '@/components/atoms/AuthMessage';
+import { setAccessToken, setCurrentUser } from '@/lib/auth-store';
 import { login, type LoginPayload } from '@/services/authService';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
 export default function LoginForm() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState<LoginPayload>({
     email: '',
     password: '',
@@ -34,7 +38,15 @@ export default function LoginForm() {
         timeoutMs: 10000,
       });
 
-      setMessage(`Xin chào ${response.data.fullName}, đăng nhập thành công.`);
+      const authData = response.data;
+
+      setAccessToken(authData.accessToken);
+      setCurrentUser(authData.user);
+
+      setMessage(`Xin chào ${authData.user.fullName}, đăng nhập thành công.`);
+
+      router.push('/dashboard');
+      router.refresh();
     } catch (error) {
       setIsError(true);
       setMessage(getApiErrorMessage(error));
@@ -46,10 +58,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label
-          htmlFor="email"
-          className="mb-2 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700">
           Email
         </label>
         <input
@@ -59,16 +68,13 @@ export default function LoginForm() {
           placeholder="you@example.com"
           value={formData.email}
           onChange={handleChange}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-primary"
+          className="w-full rounded-xl border border-Zcolor3 px-4 py-3 outline-none transition focus:border-Zcolor13 focus:ring-2 focus:ring-Zcolor4"
           required
         />
       </div>
 
       <div>
-        <label
-          htmlFor="password"
-          className="mb-2 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-700">
           Mật khẩu
         </label>
         <input
@@ -78,7 +84,7 @@ export default function LoginForm() {
           placeholder="••••••••"
           value={formData.password}
           onChange={handleChange}
-          className="w-full rounded-xl border border-gray-200 px-4 py-3 outline-none transition focus:border-primary"
+          className="w-full rounded-xl border border-Zcolor3 px-4 py-3 outline-none transition focus:border-Zcolor13 focus:ring-2 focus:ring-Zcolor4"
           required
         />
       </div>
@@ -86,7 +92,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="inline-flex w-full items-center justify-center rounded-xl bg-Zcolor13 px-6 py-3 text-sm font-semibold text-white transition hover:bg-Zcolor14 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? 'Đang xử lý...' : 'Đăng nhập'}
       </button>

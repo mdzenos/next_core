@@ -1,5 +1,5 @@
 type AuthMessageProps = {
-  message: string;
+  message?: string;
   isError?: boolean;
 };
 
@@ -12,12 +12,14 @@ export default function AuthMessage({
   }
 
   return (
-    <p
-      className={`text-center text-sm ${
-        isError ? 'text-red-600' : 'text-green-600'
+    <div
+      className={`rounded-xl border px-4 py-3 text-sm ${
+        isError
+          ? 'border-red-200 bg-red-50 text-red-600'
+          : 'border-Zcolor3 bg-Zcolor1 text-Zcolor13'
       }`}
     >
       {message}
-    </p>
+    </div>
   );
 }

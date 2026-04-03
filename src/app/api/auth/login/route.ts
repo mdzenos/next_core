@@ -1,6 +1,8 @@
 import { loginUser } from '@/data/api/auth';
 import { errorResponse, successResponse } from '@/lib/api-response-next';
 
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -15,9 +17,9 @@ export async function POST(request: Request) {
       });
     }
 
-    const user = await loginUser(email, password);
+    const result = await loginUser(email, password);
 
-    if (!user) {
+    if (!result) {
       return errorResponse({
         message: 'Email hoặc mật khẩu không đúng',
         status: 401,
@@ -25,13 +27,30 @@ export async function POST(request: Request) {
       });
     }
 
-    return successResponse(user, {
-      message: 'Đăng nhập thành công',
-      status: 200,
-      actions: {
-        view: true,
+    const response = successResponse(
+      {
+        user: result.user,
+        accessToken: result.accessToken,
+        accessTokenExpiresAt: result.accessTokenExpiresAt,
       },
+      {
+        message: 'Đăng nhập thành công',
+        status: 200,
+        actions: {
+          view: true,
+        },
+      },
+    );
+
+    response.cookies.set('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: REFRESH_TOKEN_MAX_AGE,
     });
+
+    return response;
   } catch (error) {
     console.error('POST /api/auth/login error:', error);
 

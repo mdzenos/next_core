@@ -10,16 +10,22 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --color-primary: #014f86;
-  --color-secondary: #a9d6e5;
-  --color-lightBlue: #89c2d9;
-  --color-mediumBlue: #61a5c2;
-  --color-blueGray: #468faf;
-  --color-darkBlue1: #2c7da0;
-  --color-darkBlue2: #2a6f97;
-  --color-deepBlue1: #01497c;
-  --color-deepBlue2: #013a63;
-  --color-deepBlue3: #012a4a;
+    /* Blue scale 1-15 */
+        --color-Zcolor1: #f5fbfd;
+        --color-Zcolor2: #ebf7fb;
+        --color-Zcolor3: #dceff6;
+        --color-Zcolor4: #c8e4f0;
+        --color-Zcolor5: #a9d6e5;
+        --color-Zcolor6: #89c2d9;
+        --color-Zcolor7: #74b4cd;
+        --color-Zcolor8: #61a5c2;
+        --color-Zcolor9: #468faf;
+        --color-Zcolor10: #3784a7;
+        --color-Zcolor11: #2c7da0;
+        --color-Zcolor12: #2a6f97;
+        --color-Zcolor13: #014f86;
+        --color-Zcolor14: #013a63;
+        --color-Zcolor15: #012a4a;
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

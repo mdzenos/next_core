@@ -5,6 +5,8 @@ import {
   successResponse,
 } from '@/lib/api-response-next';
 
+const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -40,23 +42,40 @@ export async function POST(request: Request) {
       return validationErrorResponse(errors, errors[0], 403);
     }
 
-    const user = await registerUser(fullName, email, password);
+    const result = await registerUser(fullName, email, password);
 
-    return successResponse(user, {
-      message: 'Đăng ký tài khoản thành công',
-      status: 201,
-      actions: {
-        view: true,
-        create: true,
+    const response = successResponse(
+      {
+        user: result.user,
+        accessToken: result.accessToken,
+        accessTokenExpiresAt: result.accessTokenExpiresAt,
       },
+      {
+        message: 'Đăng ký tài khoản thành công',
+        status: 201,
+        actions: {
+          view: true,
+          create: true,
+        },
+      },
+    );
+
+    response.cookies.set('refreshToken', result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: REFRESH_TOKEN_MAX_AGE,
     });
+
+    return response;
   } catch (error) {
     console.error('POST /api/auth/register error:', error);
 
     return errorResponse({
-      message: 'Đã xảy ra lỗi khi đăng ký',
+      message: error instanceof Error ? error.message : 'Đã xảy ra lỗi khi đăng ký',
       status: 500,
-      data: ['Đã xảy ra lỗi khi đăng ký'],
+      data: [error instanceof Error ? error.message : 'Đã xảy ra lỗi khi đăng ký'],
     });
   }
 }

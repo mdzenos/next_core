@@ -16,9 +16,9 @@ type ButtonProps = {
 };
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'bg-primary text-white hover:opacity-90',
-  secondary: 'bg-secondary text-primary hover:opacity-90',
-  outline: 'border border-primary text-primary hover:bg-primary hover:text-white',
+  primary: 'bg-Zcolor13 text-white hover:bg-Zcolor14',
+  secondary: 'bg-Zcolor5 text-Zcolor15 hover:bg-Zcolor6',
+  outline: 'border border-Zcolor13 text-Zcolor13 hover:bg-Zcolor13 hover:text-white',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
