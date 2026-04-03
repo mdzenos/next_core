@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { getCurrentUser } from '@/lib/auth-store';
-import { logoutSession } from '@/services/authSessionService';
 import { useState } from 'react';
 import UserMenu from '@/components/molecules/UserMenu';
+import { getCurrentUser } from '@/lib/auth-store';
+import { logoutSession } from '@/services/authSessionService';
 
 type PublicTemplateProps = {
   children: React.ReactNode;
@@ -18,15 +18,16 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
 
   const isAuthenticated = !!currentUser;
 
-  const isActive = (href: string) => {
+  function isActive(href: string) {
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
-  };
+  }
 
-  const navClass = (href: string) =>
-    isActive(href)
+  function navClass(href: string) {
+    return isActive(href)
       ? 'rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200'
       : 'rounded-full px-4 py-2 text-sm font-medium text-white/90 transition-all duration-200 hover:bg-white/10 hover:text-white';
+  }
 
   async function handleLogout() {
     await logoutSession();
@@ -36,14 +37,14 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-Zcolor12 via-Zcolor10 to-Zcolor8 text-white">
-      <header className="sticky top-0 z-50 border-b border-white/15 bg-white/10 backdrop-blur-xl">
+    <div className="min-h-screen bg-gradient-to-br from-Zcolor13 via-Zcolor10 to-Zcolor7 text-white">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-gradient-to-r from-Zcolor12/50 via-Zcolor10/45 to-Zcolor8/50 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link
             href={isAuthenticated ? '/dashboard' : '/'}
             className="text-xl font-bold tracking-tight text-Zcolor15 transition-colors duration-200 hover:text-Zcolor3"
           >
-            NextJS Core
+            <h1>NextJS Core</h1>
           </Link>
 
           {!isAuthenticated ? (
@@ -64,7 +65,7 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
             <div className="flex items-center gap-3">
               <UserMenu
                 fullName={currentUser?.fullName ?? 'Người dùng'}
-                // email={currentUser?.email ?? ''}
+                email={currentUser?.email ?? ''}
                 profileHref="/profile"
                 dashboardHref="/dashboard"
                 showDashboardLink
