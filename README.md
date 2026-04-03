@@ -33,38 +33,73 @@ nextjs-core/
 │  │     ├── posts/route.ts                  # GET/POST /api/posts, Lấy danh sách posts hoặc tạo post mới
 │  │     ├── posts/[postId]/route.ts         # GET/PUT/DELETE /api/posts/:postId, Chi tiết, cập nhật, xóa post
 │  │     └── users/[userId]/route.ts         # GET /api/users/:userId, Lấy thông tin user/profile
-│  ├── components/                           # UI components theo Atomic Design, Chỉ nên tập trung vào trình bày + composition UI, Không nên nhồi toàn bộ fetch/business logic vào đây
-│  │  ├── atoms/                             # Thành phần nhỏ nhất, tái sử dụng cao
-│  │  │  ├── Button.tsx                      # Nút cơ bản, có variants/sizes nếu cần
-│  │  │  ├── Input.tsx                       # Input cơ bản
-│  │  │  ├── Avatar.tsx                      # Ảnh đại diện
-│  │  │  ├── Badge.tsx                       # Badge/tag/status nhỏ
-│  │  │  ├── Spinner.tsx                     # Loading indicator
-│  │  │  └── Icon.tsx                        # Wrapper icon hoặc mapping icon chung
-│  │  ├── molecules/                         # Ghép atoms thành block UI nhỏ có nghĩa
-│  │  │  ├── Navbar.tsx                      # Thanh điều hướng nhỏ
-│  │  │  ├── Sidebar.tsx                     # Menu bên trái cơ bản
-│  │  │  ├── FooterBar.tsx                   # Footer bar nhỏ
+│  ├── components/                           # Shared UI theo Atomic Design, Chỉ giữ thành phần tái sử dụng toàn app, Không đặt business logic hoặc feature layout lớn ở đây
+│  │  ├── atoms/                             # Primitive UI library dùng chung toàn app, đã được chuẩn hóa theo globals.css
+│  │  │  ├── styles.ts                       # Shared styling primitives cho controls, buttons, chips, floating panels, overlay, text, heading
+│  │  │  ├── index.ts                        # Barrel export toàn bộ atoms để import từ @/components/atoms
+│  │  │  ├── Button.tsx / IconButton.tsx     # Button system nhất quán theo atomButtonBaseClass + variants/sizes dùng chung
+│  │  │  ├── Input.tsx / Select.tsx / Textarea.tsx
+│  │  │  │                                  # Form controls chuẩn hóa cùng shape, border, focus, helper/error text
+│  │  │  ├── Checkbox.tsx / Radio.tsx / Switch.tsx / Toggle.tsx / Selectable.tsx
+│  │  │  │                                  # Choice controls và pressed/selected states theo cùng visual language
+│  │  │  ├── Text.tsx / Heading.tsx / Label.tsx / HelperText.tsx / ErrorText.tsx / Link.tsx
+│  │  │  │                                  # Typography primitives tái sử dụng, bám token và utility classes từ globals.css
+│  │  │  ├── Alert.tsx / Badge.tsx / Pill.tsx / Tag.tsx / StatusDot.tsx / ProgressBar.tsx
+│  │  │  │                                  # Feedback, chip, progress và status atoms theo cùng palette
+│  │  │  ├── Overlay.tsx / Backdrop.tsx / Popover.tsx / Tooltip.tsx / Floating.tsx / FloatingArrow.tsx
+│  │  │  │                                  # Floating/overlay primitives dùng cùng surface, shadow và blur system
+│  │  │  ├── Portal.tsx / PortalGroup.tsx / Layer.tsx / LayerStack.tsx / ZIndexManager.tsx
+│  │  │  │                                  # Layering primitives cho modal, dropdown, toast, floating content
+│  │  │  ├── FocusLock.tsx / FocusTrap.tsx / FocusScope.tsx / FocusGuards.tsx / RovingFocus.tsx / TabScope.tsx
+│  │  │  │                                  # Accessibility + keyboard/focus navigation primitives
+│  │  │  ├── Image.tsx / LazyImage.tsx / BlurImage.tsx / ImageFallback.tsx / AspectRatio.tsx
+│  │  │  │                                  # Media atoms với fallback, lazy loading, blur placeholder và ratio wrapper
+│  │  │  ├── ScrollArea.tsx / ScrollShadow.tsx / ScrollSnap.tsx / ScrollTracker.tsx / ScrollLock.tsx / ScrollRestoration.tsx
+│  │  │  │                                  # Scroll primitives cho area, masks, snap, tracking và lock/restore behavior
+│  │  │  ├── Box.tsx / Center.tsx / Container.tsx / Flex.tsx / Grid.tsx / Stack.tsx / Spacer.tsx
+│  │  │  │                                  # Layout primitives ở mức atom, dùng cho composition toàn app
+│  │  │  └── ...                            # Còn nhiều atoms khác cho OTP, drag/pan, presence, delay, measurement, shortcut, kbd, v.v.
+│  │  ├── molecules/                         # Ghép nhiều atoms thành block nhỏ có nghĩa nghiệp vụ nhưng vẫn đủ generic để tái sử dụng
+│  │  │  ├── AuthFormMessage.tsx             # Thông báo form auth, bọc Alert cho login / register
+│  │  │  ├── UserMenu.tsx                    # Cụm avatar + menu hành động user
+│  │  │  ├── BreadcrumbTrail.tsx             # Breadcrumb cho dashboard / nested navigation
+│  │  │  ├── SidebarDrilldownItem.tsx        # Item menu sidebar có drill-down / icon / active state
+│  │  │  ├── FeatureCard.tsx                 # Card mô tả tính năng ở landing page
 │  │  │  ├── PostCard.tsx                    # Card hiển thị 1 bài post
-│  │  │  ├── CommentCard.tsx                 # Card 1 comment
-│  │  │  ├── PostForm.tsx                    # Form tạo/sửa post
-│  │  │  ├── LoginForm.tsx                   # Form login
-│  │  │  ├── RegisterForm.tsx                # Form register
-│  │  │  └── SearchBox.tsx                   # Ô tìm kiếm
-│  │  ├── organisms/                         # Cụm UI lớn hơn, ghép nhiều molecules/atoms
-│  │  │  ├── Feed.tsx                        # Feed tổng thể
-│  │  │  ├── PostList.tsx                    # Danh sách post
-│  │  │  ├── NotificationPanel.tsx           # Khu vực thông báo
-│  │  │  ├── DashboardHeader.tsx             # Header cho dashboard
-│  │  │  ├── DashboardSidebar.tsx            # Sidebar hoàn chỉnh cho dashboard
-│  │  │  ├── DashboardFooter.tsx             # Footer dashboard
-│  │  │  ├── ProfileHeader.tsx               # Header profile user
-│  │  │  └── StatsCards.tsx                  # Cụm card thống kê
-│  │  └── templates/                         # Template page-level
-│  │     ├── PublicTemplate.tsx              # Template cho trang public
-│  │     ├── DashboardTemplate.tsx           # Template dashboard: header/sidebar/content/footer
-│  │     ├── ProfileTemplate.tsx             # Template profile page
-│  │     └── AuthTemplate.tsx                # Template riêng cho login/register
+│  │  │  ├── SearchBox.tsx                   # Ô tìm kiếm có icon / clear action
+│  │  │  ├── PasswordField.tsx               # Input password có toggle show / hide
+│  │  │  ├── FormField.tsx                   # Label + hint + error + input slot cho form chuẩn hóa
+│  │  │  ├── EmptyState.tsx                  # Trạng thái rỗng cho list / table / feed
+│  │  │  ├── ConfirmAction.tsx               # Cụm xác nhận hành động nhỏ như delete / logout
+│  │  │  ├── Pagination.tsx                  # Điều hướng phân trang dùng chung
+│  │  │  ├── StatCard.tsx                    # Card số liệu đơn cho dashboard / analytics
+│  │  │  └── SectionHeader.tsx               # Tiêu đề section có title / description / action
+│  │  ├── organisms/                         # Cụm UI lớn hơn, chỉ nên đặt global nếu thật sự tái sử dụng ở nhiều feature khác nhau
+│  │  │  ├── AppHeader.tsx                   # Header dùng chung cho nhiều khu vực khác nhau ngoài 1 feature cụ thể
+│  │  │  ├── AppSidebarShell.tsx             # Khung sidebar tổng quát, không gắn chặt vào dashboard riêng lẻ
+│  │  │  ├── DataTable.tsx                   # Bảng dữ liệu tái sử dụng cho users / posts / reports / audit logs
+│  │  │  ├── FilterToolbar.tsx               # Thanh filter + search + sort dùng chung cho list page
+│  │  │  ├── StatsOverview.tsx               # Cụm card thống kê tổng quát, có thể tái dùng nhiều màn hình analytics
+│  │  │  ├── EmptyContentPanel.tsx           # Panel empty state lớn cho feed / list / dashboard block
+│  │  │  ├── ActivityFeed.tsx                # Feed hoạt động dùng chung nếu nhiều domain hiển thị timeline giống nhau
+│  │  │  └── NotificationPanel.tsx           # Khu vực thông báo lớn, dùng lại ngoài một feature đơn lẻ
+│  │  │                                      # Nếu organism chỉ phục vụ 1 feature, vẫn nên đặt trong:
+│  │  │                                      # - src/app/(public)/auth/components/
+│  │  │                                      # - src/app/(public)/components/home/
+│  │  │                                      # - src/app/(protected)/dashboard/components/
+│  │  └── templates/                         # Template page-level, chỉ nên để global khi là layout composition dùng lại nhiều domain
+│  │     ├── SplitScreenTemplate.tsx         # Template 2 cột: content + visual panel, dùng cho auth/onboarding/marketing
+│  │     ├── ListPageTemplate.tsx            # Template page list chuẩn: header + filters + content + pagination
+│  │     ├── DetailPageTemplate.tsx          # Template page detail: breadcrumb + heading + meta + content area
+│  │     ├── SettingsTemplate.tsx            # Template settings/profile/preferences nhiều tab hoặc section
+│  │     ├── FormPageTemplate.tsx            # Template cho create/edit flow với header + form body + action footer
+│  │     ├── AnalyticsTemplate.tsx           # Template analytics tổng quát: filters + stats + charts + tables
+│  │     └── CenteredContentTemplate.tsx     # Template căn giữa nội dung cho trạng thái empty / success / verify / notice
+│  │                                            # Với template gắn chặt vào feature hoặc route group, nên giữ feature-scope
+│  │                                            # Ví dụ hiện tại:
+│  │                                            # - PublicTemplate.tsx -> src/app/(public)/components/
+│  │                                            # - AuthTemplate.tsx -> src/app/(public)/auth/components/
+│  │                                            # - DashboardTemplate.tsx -> src/app/(protected)/dashboard/components/
 │  ├── context/                              # React Context cho global state nhẹ
 │  │  ├── AuthContext.tsx                    # Trạng thái user đăng nhập, login/logout, session client
 │  │  ├── ThemeContext.tsx                   # Dark/light mode, theme settings
@@ -92,9 +127,9 @@ nextjs-core/
 │  ├── utils/                                # Utility helpers thuần túy
 │  │  ├── formatDate.ts                      # Format ngày giờ
 │  │  ├── constants.ts                       # Constants, enum-like values, routes, config tĩnh
-│  │  └── cn.ts                              # Helper gộp className, thường kiểu clsx/twMerge
+│  │  └── cn.ts                              # Helper gộp className tối giản cho toàn bộ atoms/molecules/templates
 │  └── styles/
-│     └── globals.css                        # Global styles toàn app, Tailwind v4 theme tokens, reset nhẹ, body styles...
+│     └── globals.css                        # Theme tokens, surface/shadow/focus system, utilities và animation dùng chung toàn app
 ├── AGENTS.md                                 ✅ Tài liệu hướng dẫn agent/workflow nếu bạn dùng AI agents
 ├── CLAUDE.md                                 ✅ Tài liệu ghi chú cho Claude/AI workflow nếu có
 ├── docker-compose.yml                        ✅ Cấu hình chạy app cùng các service khác bằng Docker Compose

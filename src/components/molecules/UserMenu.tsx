@@ -7,7 +7,7 @@ import {
   ChevronDownIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import Avatar from '@/components/atoms/Avatar';
+import { Avatar } from '@/components/atoms';
 
 type UserMenuProps = {
   fullName?: string;

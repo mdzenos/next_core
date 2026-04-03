@@ -1,14 +1,12 @@
-import { logoutUser } from '@/data/api/auth';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { logoutSessionForServer } from '@/services/authSessionService';
 
 export async function POST() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get('refreshToken')?.value;
 
-  if (refreshToken) {
-    await logoutUser(refreshToken);
-  }
+  await logoutSessionForServer(refreshToken);
 
   const response = NextResponse.json({ success: true });
 

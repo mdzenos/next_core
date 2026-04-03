@@ -26,14 +26,14 @@ export type ApiErrorResponse<T = string[] | null> = {
   actions: ApiActions;
 };
 
-type SuccessOptions = {
+export type ApiSuccessOptions = {
   message?: string;
   status?: number;
   totalRecord?: number;
   actions?: ApiActions;
 };
 
-type ErrorOptions<T> = {
+export type ApiErrorOptions<T> = {
   message: string;
   status?: number;
   data?: T;
@@ -56,16 +56,8 @@ function resolveTotalRecord<T>(data: T, totalRecord?: number) {
   return 1;
 }
 
-export function formatSuccessResponse<T>(
-  data: T,
-  options: SuccessOptions = {}
-): ApiSuccessResponse<T> {
-  const {
-    message = 'Thành công!',
-    status = 200,
-    totalRecord,
-    actions = {},
-  } = options;
+export function formatSuccessResponse<T>(data: T, options: ApiSuccessOptions = {}): ApiSuccessResponse<T> {
+  const { message = 'Thành công!', status = 200, totalRecord, actions = {} } = options;
 
   return {
     message,
@@ -78,14 +70,9 @@ export function formatSuccessResponse<T>(
 }
 
 export function formatErrorResponse<T = string[] | null>(
-  options: ErrorOptions<T>
+  options: ApiErrorOptions<T>,
 ): ApiErrorResponse<T> {
-  const {
-    message,
-    status = 400,
-    data = null as T,
-    actions = {},
-  } = options;
+  const { message, status = 400, data = null as T, actions = {} } = options;
 
   return {
     message,

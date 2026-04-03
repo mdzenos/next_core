@@ -1,0 +1,32 @@
+[
+  {
+    "id": "u1",
+    "fullName": "Admin User",
+    "email": "admin@nextjscore.dev",
+    "password": "123456"
+  },
+  {
+    "id": "u1775112353107",
+    "fullName": "Bùi Trí Đức",
+    "email": "admin@vnpost.vn",
+    "password": "123123"
+  },
+  {
+    "id": "u1775179315223",
+    "fullName": "Đức Bùi Trí (Zenos)",
+    "email": "zenos@nextjscore.dev",
+    "password": "123123"
+  },
+  {
+    "id": "u1775181119003",
+    "fullName": "Bùi Trí Đức",
+    "email": "admin111@nextjscore.dev",
+    "password": "123123"
+  },
+  {
+    "id": "u1775182537985",
+    "fullName": "Bùi Trí Đức",
+    "email": "admin111123@nextjscore.dev",
+    "password": "123123"
+  }
+]

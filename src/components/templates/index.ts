@@ -1,0 +1,15 @@
+export { default as CenteredContentTemplate } from '@/components/templates/CenteredContentTemplate';
+export { default as ContentWorkspaceTemplate } from '@/components/templates/ContentWorkspaceTemplate';
+export { default as ControlCenterTemplate } from '@/components/templates/ControlCenterTemplate';
+export { default as DashboardPageTemplate } from '@/components/templates/DashboardPageTemplate';
+export { default as DocsPageTemplate } from '@/components/templates/DocsPageTemplate';
+export { default as SplitScreenTemplate } from '@/components/templates/SplitScreenTemplate';
+export { default as ListPageTemplate } from '@/components/templates/ListPageTemplate';
+export { default as MarketingPageTemplate } from '@/components/templates/MarketingPageTemplate';
+export { default as DetailPageTemplate } from '@/components/templates/DetailPageTemplate';
+export { default as FormPageTemplate } from '@/components/templates/FormPageTemplate';
+export { default as NotificationInboxTemplate } from '@/components/templates/NotificationInboxTemplate';
+export { default as OperationsDeskTemplate } from '@/components/templates/OperationsDeskTemplate';
+export { default as ReviewStudioTemplate } from '@/components/templates/ReviewStudioTemplate';
+export { default as SettingsPageTemplate } from '@/components/templates/SettingsPageTemplate';
+export { default as TeamPortalTemplate } from '@/components/templates/TeamPortalTemplate';

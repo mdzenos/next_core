@@ -1,5 +1,6 @@
-import { loginUser } from '@/data/api/auth';
 import { errorResponse, successResponse } from '@/lib/api-response-next';
+import { ApiError } from '@/services/api';
+import { loginForServer } from '@/services/authService';
 
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
 
@@ -17,32 +18,22 @@ export async function POST(request: Request) {
       });
     }
 
-    const result = await loginUser(email, password);
-
-    if (!result) {
-      return errorResponse({
-        message: 'Email hoặc mật khẩu không đúng',
-        status: 401,
-        data: ['Email hoặc mật khẩu không đúng'],
-      });
-    }
+    const result = await loginForServer({ email, password });
 
     const response = successResponse(
       {
-        user: result.user,
-        accessToken: result.accessToken,
-        accessTokenExpiresAt: result.accessTokenExpiresAt,
+        user: result.data.user,
+        accessToken: result.data.accessToken,
+        accessTokenExpiresAt: result.data.accessTokenExpiresAt,
       },
       {
-        message: 'Đăng nhập thành công',
-        status: 200,
-        actions: {
-          view: true,
-        },
+        message: result.message,
+        status: result.status,
+        actions: result.actions,
       },
     );
 
-    response.cookies.set('refreshToken', result.refreshToken, {
+    response.cookies.set('refreshToken', result.data.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -53,6 +44,14 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     console.error('POST /api/auth/login error:', error);
+
+    if (error instanceof ApiError) {
+      return errorResponse({
+        message: error.message,
+        status: error.status,
+        data: Array.isArray(error.data) ? error.data : [error.message],
+      });
+    }
 
     return errorResponse({
       message: 'Đã xảy ra lỗi khi đăng nhập',

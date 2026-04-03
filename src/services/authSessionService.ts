@@ -1,25 +1,23 @@
-import {
-  clearAuth,
-  getAccessToken,
-  setAccessToken,
-  setCurrentUser,
-} from '@/lib/auth-store';
-import type { ApiResponse, AuthResponseData, SafeUser } from '@/services/authService';
-import { api } from '@/services/api';
+import { authAdapter } from '@/adapters/auth';
+import { clearMockRefreshToken, getMockRefreshToken } from '@/lib/auth/mock-session-store';
+import { clearAuth, getAccessToken, setAccessToken, setCurrentUser } from '@/lib/auth-store';
+import type { AuthResponseData, MeResponseData } from '@/types/auth';
 
-type MeResponseData = {
-  user: SafeUser;
-};
+export function refreshSessionForServer(refreshToken?: string | null) {
+  return authAdapter.refreshSession(refreshToken);
+}
+
+export function getMeForServer(accessToken?: string | null) {
+  return authAdapter.getMe(accessToken);
+}
+
+export function logoutSessionForServer(refreshToken?: string | null) {
+  return authAdapter.logout(refreshToken);
+}
 
 export async function refreshSession() {
   try {
-    const result = await api.post<ApiResponse<AuthResponseData>>(
-      '/api/auth/refresh',
-      undefined,
-      {
-        credentials: 'include',
-      }
-    );
+    const result = await authAdapter.refreshSession(getMockRefreshToken());
 
     if (!result?.data) {
       clearAuth();
@@ -44,10 +42,7 @@ export async function getMe() {
   }
 
   try {
-    const result = await api.get<ApiResponse<MeResponseData>>('/api/auth/me', {
-      token,
-      credentials: 'include',
-    });
+    const result = await authAdapter.getMe(token);
 
     if (!result?.data) {
       return null;
@@ -63,10 +58,9 @@ export async function getMe() {
 
 export async function logoutSession() {
   try {
-    await api.post<ApiResponse<null>>('/api/auth/logout', undefined, {
-      credentials: 'include',
-    });
+    await authAdapter.logout(getMockRefreshToken());
   } finally {
+    clearMockRefreshToken();
     clearAuth();
   }
 }

@@ -1,76 +1,58 @@
-export type SafeUser = {
-  id: string;
-  fullName: string;
-  email: string;
-};
+import { authAdapter } from '@/adapters/auth';
+import { setMockRefreshToken } from '@/lib/auth/mock-session-store';
+import { setAccessToken, setCurrentUser } from '@/lib/auth-store';
+import type {
+  ApiResponse,
+  AuthAdapterResponseData,
+  AuthResponseData,
+  LoginPayload,
+  RegisterPayload,
+  RequestOptions,
+} from '@/types/auth';
 
-export type LoginPayload = {
-  email: string;
-  password: string;
-};
+function toPublicAuthResponse(
+  response: ApiResponse<AuthAdapterResponseData>,
+): ApiResponse<AuthResponseData> {
+  const { refreshToken: _refreshToken, ...data } = response.data;
 
-export type RegisterPayload = {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-export type AuthResponseData = {
-  user: SafeUser;
-  accessToken: string;
-  accessTokenExpiresAt: number;
-};
-
-export type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data: T;
-};
-
-type RequestOptions = {
-  timeoutMs?: number;
-};
-
-async function postJson<T>(
-  url: string,
-  body: unknown,
-  options?: RequestOptions,
-): Promise<ApiResponse<T>> {
-  const controller = new AbortController();
-  const timeoutMs = options?.timeoutMs ?? 10000;
-
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw result;
-    }
-
-    return result;
-  } finally {
-    clearTimeout(timeoutId);
-  }
+  return {
+    ...response,
+    data,
+  };
 }
 
-export function login(payload: LoginPayload, options?: RequestOptions) {
-  return postJson<AuthResponseData>('/api/auth/login', payload, options);
+function persistAuthState(response: ApiResponse<AuthAdapterResponseData>) {
+  setAccessToken(response.data.accessToken);
+  setCurrentUser(response.data.user);
+  setMockRefreshToken(response.data.refreshToken);
+
+  return toPublicAuthResponse(response);
 }
 
-export function register(payload: RegisterPayload, options?: RequestOptions) {
-  return postJson<AuthResponseData>('/api/auth/register', payload, options);
+export function loginForServer(payload: LoginPayload, options?: RequestOptions) {
+  return authAdapter.login(payload, options);
+}
+
+export function registerForServer(payload: RegisterPayload, options?: RequestOptions) {
+  return authAdapter.register(payload, options);
+}
+
+export type {
+  ApiActions,
+  ApiResponse,
+  AuthAdapterResponseData,
+  AuthResponseData,
+  LoginPayload,
+  RegisterPayload,
+  SafeUser,
+} from '@/types/auth';
+
+export async function login(payload: LoginPayload, options?: RequestOptions) {
+  const response = await authAdapter.login(payload, options);
+  return persistAuthState(response);
+}
+
+export async function register(payload: RegisterPayload, options?: RequestOptions) {
+  const response = await authAdapter.register(payload, options);
+  return persistAuthState(response);
 }

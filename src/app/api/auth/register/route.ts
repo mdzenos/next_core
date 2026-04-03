@@ -1,9 +1,6 @@
-import { registerUser } from '@/data/api/auth';
-import {
-  errorResponse,
-  validationErrorResponse,
-  successResponse,
-} from '@/lib/api-response-next';
+import { errorResponse, validationErrorResponse, successResponse } from '@/lib/api-response-next';
+import { ApiError } from '@/services/api';
+import { registerForServer } from '@/services/authService';
 
 const REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;
 
@@ -42,25 +39,27 @@ export async function POST(request: Request) {
       return validationErrorResponse(errors, errors[0], 403);
     }
 
-    const result = await registerUser(fullName, email, password);
+    const result = await registerForServer({
+      fullName,
+      email,
+      password,
+      confirmPassword,
+    });
 
     const response = successResponse(
       {
-        user: result.user,
-        accessToken: result.accessToken,
-        accessTokenExpiresAt: result.accessTokenExpiresAt,
+        user: result.data.user,
+        accessToken: result.data.accessToken,
+        accessTokenExpiresAt: result.data.accessTokenExpiresAt,
       },
       {
-        message: 'Đăng ký tài khoản thành công',
-        status: 201,
-        actions: {
-          view: true,
-          create: true,
-        },
+        message: result.message,
+        status: result.status,
+        actions: result.actions,
       },
     );
 
-    response.cookies.set('refreshToken', result.refreshToken, {
+    response.cookies.set('refreshToken', result.data.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -71,6 +70,14 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     console.error('POST /api/auth/register error:', error);
+
+    if (error instanceof ApiError) {
+      return errorResponse({
+        message: error.message,
+        status: error.status,
+        data: Array.isArray(error.data) ? error.data : [error.message],
+      });
+    }
 
     return errorResponse({
       message: error instanceof Error ? error.message : 'Đã xảy ra lỗi khi đăng ký',

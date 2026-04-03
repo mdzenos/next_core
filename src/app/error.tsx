@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Button from '@/components/atoms/Button';
+import { Button } from '@/components/atoms';
 
 type ErrorProps = {
   error: Error & { digest?: string };

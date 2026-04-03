@@ -3,31 +3,16 @@ import {
   formatErrorResponse,
   formatSuccessResponse,
   formatValidationErrorResponse,
-  type ApiActions,
+  type ApiErrorOptions,
+  type ApiSuccessOptions,
 } from '@/lib/api-response';
 
-type SuccessOptions = {
-  message?: string;
-  status?: number;
-  totalRecord?: number;
-  actions?: ApiActions;
-};
-
-type ErrorOptions<T> = {
-  message: string;
-  status?: number;
-  data?: T;
-  actions?: ApiActions;
-};
-
-export function successResponse<T>(data: T, options: SuccessOptions = {}) {
+export function successResponse<T>(data: T, options: ApiSuccessOptions = {}) {
   const payload = formatSuccessResponse(data, options);
   return NextResponse.json(payload, { status: payload.status });
 }
 
-export function errorResponse<T = string[] | null>(
-  options: ErrorOptions<T>
-) {
+export function errorResponse<T = string[] | null>(options: ApiErrorOptions<T>) {
   const payload = formatErrorResponse(options);
   return NextResponse.json(payload, { status: payload.status });
 }

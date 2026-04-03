@@ -1,5 +1,6 @@
-import { getUserByAccessToken } from '@/data/api/auth';
 import { errorResponse, successResponse } from '@/lib/api-response-next';
+import { ApiError } from '@/services/api';
+import { getMeForServer } from '@/services/authSessionService';
 
 export async function GET(request: Request) {
   try {
@@ -14,28 +15,23 @@ export async function GET(request: Request) {
     }
 
     const accessToken = authorization.replace('Bearer ', '');
-    const user = await getUserByAccessToken(accessToken);
+    const result = await getMeForServer(accessToken);
 
-    if (!user) {
-      return errorResponse({
-        message: 'Phiên đăng nhập không hợp lệ hoặc đã hết hạn',
-        status: 401,
-        data: ['Phiên đăng nhập không hợp lệ hoặc đã hết hạn'],
-      });
-    }
-
-    return successResponse(
-      { user },
-      {
-        message: 'Lấy thông tin người dùng thành công',
-        status: 200,
-        actions: {
-          view: true,
-        },
-      }
-    );
+    return successResponse(result.data, {
+      message: result.message,
+      status: result.status,
+      actions: result.actions,
+    });
   } catch (error) {
     console.error('GET /api/auth/me error:', error);
+
+    if (error instanceof ApiError) {
+      return errorResponse({
+        message: error.message,
+        status: error.status,
+        data: Array.isArray(error.data) ? error.data : [error.message],
+      });
+    }
 
     return errorResponse({
       message: 'Đã xảy ra lỗi khi lấy thông tin người dùng',
