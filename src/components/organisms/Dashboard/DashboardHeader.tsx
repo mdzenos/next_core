@@ -39,10 +39,11 @@ export default function DashboardHeader({
           <Bars3Icon className="h-6 w-6" />
         </IconButton>
 
-        <Link href="/" className="block rounded-lg px-1 py-1 transition hover:bg-white/10">
-          <h1 className="text-xl font-bold tracking-tight text-Zcolor15 transition-colors duration-200 hover:text-Zcolor3">
-            NextJS Core
-          </h1>
+        <Link
+          href="/"
+          className="text-xl font-bold tracking-tight text-Zcolor15 transition-colors duration-200 hover:text-Zcolor3"
+        >
+          <h1>NextJS Core</h1>
         </Link>
       </div>
 

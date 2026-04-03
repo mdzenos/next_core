@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   ArrowRightOnRectangleIcon,
   ChevronDownIcon,
@@ -33,21 +33,26 @@ export default function UserMenu({
   buttonClassName = 'flex items-center gap-3 rounded-full px-2 py-1 transition hover:bg-white/10',
 }: UserMenuProps) {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const menuId = useId();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  function closeMenu() {
+    setIsMenuOpen(false);
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (!dropdownRef.current) return;
       if (!dropdownRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+        closeMenu();
       }
     }
 
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        setIsMenuOpen(false);
+        closeMenu();
       }
     }
 
@@ -63,8 +68,8 @@ export default function UserMenu({
   async function handleLogoutClick() {
     try {
       setIsLoggingOut(true);
+      closeMenu();
       await onLogout();
-      setIsMenuOpen(false);
     } finally {
       setIsLoggingOut(false);
     }
@@ -79,6 +84,7 @@ export default function UserMenu({
         aria-label="Mở menu tài khoản"
         aria-expanded={isMenuOpen}
         aria-haspopup="menu"
+        aria-controls={menuId}
       >
         <div className={userInfoClassName}>
           <p className="text-sm font-medium">{fullName}</p>
@@ -93,17 +99,21 @@ export default function UserMenu({
       </button>
 
       {isMenuOpen ? (
-        <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-60 overflow-hidden rounded-2xl border border-Zcolor3 bg-white shadow-xl">
+        <div
+          id={menuId}
+          role="menu"
+          className="absolute right-0 top-[calc(100%+10px)] z-50 w-60 overflow-hidden rounded-2xl border border-Zcolor3 bg-white shadow-xl"
+        >
           <div className="bg-Zcolor12 px-4 py-3 text-white">
             <p className="text-sm font-semibold">{fullName}</p>
-            <p className="text-xs text-white/80">{email}</p>
+            {email ? <p className="text-xs text-white/80">{email}</p> : null}
           </div>
 
           <div className="py-2">
             {showDashboardLink ? (
               <Link
                 href={dashboardHref}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={closeMenu}
                 className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-Zcolor1"
               >
                 <span className="h-2 w-2 rounded-full bg-Zcolor13" />
@@ -113,7 +123,7 @@ export default function UserMenu({
 
             <Link
               href={profileHref}
-              onClick={() => setIsMenuOpen(false)}
+              onClick={closeMenu}
               className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 transition hover:bg-Zcolor1"
             >
               <UserCircleIcon className="h-5 w-5 text-Zcolor13" />
