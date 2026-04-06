@@ -1,3 +1,5 @@
+
+// src/app/(public)/auth/guards/GuardLoading.tsx
 'use client';
 
 import { Spinner } from '@/components/atoms';

@@ -1,3 +1,4 @@
+// src/app/(public)/auth/guards/PublicOnlyGuard.tsx
 'use client';
 
 import GuardLoading from './GuardLoading';
