@@ -2,7 +2,7 @@
 import { buildMetadata } from '@/lib/metadata';
 import AuthTemplate from '@/app/(public)/auth/components/AuthTemplate';
 import RegisterForm from '@/app/(public)/auth/components/RegisterForm';
-import PublicOnlyGuard from '@/lib/guards/PublicOnlyGuard';
+import PublicOnlyGuard from '@/app/(public)/auth/guards/PublicOnlyGuard';
 
 export const metadata = buildMetadata({
   title: 'Đăng ký',

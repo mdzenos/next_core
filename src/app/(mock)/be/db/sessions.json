@@ -1,0 +1,30 @@
+[
+  {
+    "userId": "u1",
+    "accessToken": "mock-access-admin",
+    "refreshToken": "mock-refresh-admin",
+    "accessTokenExpiresAt": 1893456000000,
+    "refreshTokenExpiresAt": 1894060800000
+  },
+  {
+    "userId": "u1775456791576",
+    "accessToken": "access-2058163b-d718-4c0f-bb44-2da49326da79",
+    "refreshToken": "refresh-af700aea-206e-400a-9833-9f1b48a6f378",
+    "accessTokenExpiresAt": 1775460391577,
+    "refreshTokenExpiresAt": 1776061591577
+  },
+  {
+    "userId": "u1",
+    "accessToken": "access-c5f2e4fd-b9f0-43d0-9f73-4ea592cb9446",
+    "refreshToken": "refresh-e0dcf394-7581-4b00-a69b-96778f4f0c1d",
+    "accessTokenExpiresAt": 1775460397779,
+    "refreshTokenExpiresAt": 1776061597779
+  },
+  {
+    "userId": "u1775456791576",
+    "accessToken": "access-05b18b66-60a2-4067-9264-b0aa8d2b30e5",
+    "refreshToken": "refresh-3072f4fc-62e7-47bb-a4e8-dcb70e451426",
+    "accessTokenExpiresAt": 1775460407337,
+    "refreshTokenExpiresAt": 1776061607337
+  }
+]

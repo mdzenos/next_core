@@ -16,6 +16,11 @@ export type RegisterPayload = {
   confirmPassword: string;
 };
 
+export type UpdateProfilePayload = {
+  fullName: string;
+  email: string;
+};
+
 export type AuthResponseData = {
   user: SafeUser;
   accessToken: string;
@@ -67,8 +72,10 @@ export type AuthAdapter = {
     accessToken?: string | null,
     options?: RequestOptions,
   ) => Promise<ApiResponse<MeResponseData>>;
-  logout: (
-    refreshToken?: string | null,
+  updateMe: (
+    payload: UpdateProfilePayload,
+    accessToken?: string | null,
     options?: RequestOptions,
-  ) => Promise<ApiResponse<null>>;
+  ) => Promise<ApiResponse<MeResponseData>>;
+  logout: (refreshToken?: string | null, options?: RequestOptions) => Promise<ApiResponse<null>>;
 };

@@ -1,10 +1,6 @@
-import {
-  ActivityTimeline,
-  PreferenceGroup,
-  ProfileOverviewCard,
-  SettingsNavigationPanel,
-} from '@/components/organisms';
+import { ActivityTimeline, PreferenceGroup, SettingsNavigationPanel } from '@/components/organisms';
 import { TeamPortalTemplate } from '@/components/templates';
+import ProfileUpdateCard from '@/app/(protected)/profile/components/ProfileUpdateCard';
 
 const navItems = [
   {
@@ -67,14 +63,7 @@ export default function ProfilePage() {
       description="Quan ly ho so, hoat dong va tuy chinh thong bao tai khoan."
       badge="My Account"
       navigation={<SettingsNavigationPanel items={navItems} />}
-      profileCard={
-        <ProfileOverviewCard
-          name="Nguyen Van A"
-          role="Content Manager"
-          bio="Quan ly noi dung va phat trien chat luong bai viet."
-          badges={['Editor', 'Verified']}
-        />
-      }
+      profileCard={<ProfileUpdateCard />}
       timeline={<ActivityTimeline items={activities} title="Hoat dong gan day" />}
       preferences={<PreferenceGroup title="Tuy chon thong bao" items={preferenceItems} />}
     />

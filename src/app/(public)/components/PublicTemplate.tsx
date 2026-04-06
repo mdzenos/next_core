@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { UserMenu } from '@/components/molecules';
-import { getCurrentUser } from '@/lib/auth-store';
-import { logout } from '@/app/(public)/auth/apiServices';
+import { logoutAction } from '@/app/(public)/auth/action';
+import { clearAuth, getCurrentUser, subscribeCurrentUser } from '@/app/(public)/auth/state';
 
 type PublicTemplateProps = {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ type PublicTemplateProps = {
 export default function PublicTemplate({ children }: PublicTemplateProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState(() => getCurrentUser());
+  const currentUser = useSyncExternalStore(subscribeCurrentUser, getCurrentUser, getCurrentUser);
 
   const isAuthenticated = !!currentUser;
 
@@ -30,8 +30,8 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
   }
 
   async function handleLogout() {
-    await logout();
-    setCurrentUser(null);
+    await logoutAction();
+    clearAuth();
     router.replace('/');
     router.refresh();
   }
@@ -65,7 +65,7 @@ export default function PublicTemplate({ children }: PublicTemplateProps) {
             <div className="flex items-center gap-3">
               <UserMenu
                 fullName={currentUser?.fullName ?? 'Người dùng'}
-                email={currentUser?.email ?? ''}
+                // email={currentUser?.email ?? ''}
                 profileHref="/profile"
                 dashboardHref="/dashboard"
                 showDashboardLink

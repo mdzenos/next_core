@@ -1,10 +1,13 @@
+// src/app/(public)/auth/components/RegisterForm.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button, Input } from '@/components/atoms';
 import { AuthFormMessage, FormField } from '@/components/molecules';
-import { register, type RegisterPayload } from '@/app/(public)/auth/apiServices';
+import { registerAction } from '../action';
+import { setAuth } from '../state';
+import type { RegisterPayload } from '@/types/auth';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
 export default function RegisterForm() {
@@ -36,12 +39,16 @@ export default function RegisterForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await register(formData, {
-        timeoutMs: 10000,
-      });
+      const result = await registerAction(formData);
 
-      setMessage(`Xin chào ${response.data.user.fullName}, đăng ký thành công.`);
+      if (!result.success) {
+        setIsError(true);
+        setMessage(result.error);
+        return;
+      }
 
+      setAuth(result.data.accessToken, result.data.user);
+      setMessage(`Xin chào ${result.data.user.fullName}, đăng ký thành công.`);
       router.push('/dashboard');
       router.refresh();
     } catch (error) {

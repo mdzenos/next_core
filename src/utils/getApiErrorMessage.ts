@@ -1,9 +1,6 @@
-import { ApiError, ApiTimeoutError, ApiAbortError } from '@/services/api';
+import { ApiError, ApiTimeoutError, ApiAbortError } from '@/lib/http/api-client';
 
-export function getApiErrorMessage(
-  error: unknown,
-  fallback = 'Không thể kết nối tới máy chủ.'
-) {
+export function getApiErrorMessage(error: unknown, fallback = 'Không thể kết nối tới máy chủ.') {
   if (error instanceof ApiTimeoutError) {
     return 'Yêu cầu quá thời gian chờ. Vui lòng thử lại.';
   }

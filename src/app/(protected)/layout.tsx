@@ -1,4 +1,4 @@
-import ProtectedGuard from '@/lib/guards/ProtectedGuard';
+import ProtectedGuard from '@/app/(public)/auth/guards/ProtectedGuard';
 
 export default function ProtectedLayout({
   children,

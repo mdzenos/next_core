@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button, Input } from '@/components/atoms';
 import { AuthFormMessage, FormField } from '@/components/molecules';
-import { login, type LoginPayload } from '@/app/(public)/auth/apiServices';
+import { loginAction } from '../action';
+import { setAuth } from '../state';
+import type { LoginPayload } from '@/types/auth';
 import { getApiErrorMessage } from '@/utils/getApiErrorMessage';
 
 export default function LoginForm() {
@@ -34,12 +36,16 @@ export default function LoginForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await login(formData, {
-        timeoutMs: 10000,
-      });
+      const result = await loginAction(formData);
 
-      setMessage(`Xin chào ${response.data.user.fullName}, đăng nhập thành công.`);
+      if (!result.success) {
+        setIsError(true);
+        setMessage(result.error);
+        return;
+      }
 
+      setAuth(result.data.accessToken, result.data.user);
+      setMessage(`Xin chào ${result.data.user.fullName}, đăng nhập thành công.`);
       router.push('/dashboard');
       router.refresh();
     } catch (error) {
