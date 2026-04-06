@@ -3,7 +3,7 @@ services:
     image: mdzenos/nextjs-core:1.1
     container_name: nextjs-prod
     ports:
-      - '3000:3000'
+      - '${NEXT_PUBLIC_API_PORT:-3000}:3000'
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
     container_name: nextjs-dev
     working_dir: /app
     ports:
-      - '3001:3000'
+      - '${NEXT_PUBLIC_API_PORT:-3001}:3000'
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true

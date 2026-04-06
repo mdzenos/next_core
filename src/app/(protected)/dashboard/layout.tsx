@@ -1,6 +1,6 @@
 // src/app/(protected)/dashboard/layout.tsx
 import { buildMetadata } from '@/lib/metadata';
-import DashboardTemplate from '@/components/templates/DashboardTemplate';
+import DashboardTemplate from '@/app/(protected)/dashboard/components/DashboardTemplate';
 
 export const metadata = buildMetadata({
   title: 'Dashboard',

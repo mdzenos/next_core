@@ -1,4 +1,4 @@
-import Alert from '@/components/atoms/Alert';
+import { Alert } from '@/components/atoms';
 
 type AuthFormMessageProps = {
   message?: string;

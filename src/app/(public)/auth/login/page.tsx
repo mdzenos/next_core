@@ -1,8 +1,8 @@
 // src/app/(public)/auth/login/page.tsx
 import { buildMetadata } from '@/lib/metadata';
-import AuthTemplate from '@/components/templates/AuthTemplate';
-import LoginForm from '@/components/organisms/Auth/LoginForm';
-import PublicOnlyGuard from '@/components/guards/PublicOnlyGuard';
+import AuthTemplate from '@/app/(public)/auth/components/AuthTemplate';
+import LoginForm from '@/app/(public)/auth/components/LoginForm';
+import PublicOnlyGuard from '@/app/(public)/auth/guards/PublicOnlyGuard';
 
 export const metadata = buildMetadata({
   title: 'Đăng nhập',

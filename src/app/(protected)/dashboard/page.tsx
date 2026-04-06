@@ -1,29 +1,60 @@
-// src/app/dashboard/page.tsx
+import { Button } from '@/components/atoms';
+import { KPIOverviewGrid, NotificationCenterPanel } from '@/components/organisms';
+import { DashboardPageTemplate } from '@/components/templates';
+
+const kpis = [
+  { key: 'users', title: 'Users', value: '1,250', delta: '+8.4%', deltaTone: 'success' as const },
+  { key: 'posts', title: 'Posts', value: '320', delta: '+3.1%', deltaTone: 'success' as const },
+  {
+    key: 'engagement',
+    title: 'Engagement',
+    value: '87%',
+    delta: '-1.2%',
+    deltaTone: 'danger' as const,
+  },
+  {
+    key: 'reports',
+    title: 'Pending reports',
+    value: '12',
+    delta: '+2',
+    deltaTone: 'muted' as const,
+  },
+];
+
+const notifications = [
+  {
+    id: 'n-1',
+    actorName: 'System Bot',
+    title: 'Co 3 bai viet can kiem duyet',
+    description: 'Vui long xem hang doi moderation de xu ly.',
+    timeLabel: '5 phut truoc',
+    tone: 'warning' as const,
+    unread: true,
+  },
+  {
+    id: 'n-2',
+    actorName: 'Analytics',
+    title: 'Bao cao tuan da san sang',
+    description: 'Ban co the xem xu huong tang truong tai dashboard.',
+    timeLabel: '1 gio truoc',
+    tone: 'success' as const,
+  },
+];
+
 export default function DashboardPage() {
-  // throw new Error('Test root error boundary');
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-primary">Dashboard Overview</h2>
-      <p className="mt-2 text-gray-600">
-        Chào mừng bạn đến với hệ thống quản trị social dashboard.
-      </p>
-
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="rounded-xl bg-secondary p-4">
-          <p className="text-sm text-gray-600">Users</p>
-          <p className="mt-2 text-2xl font-bold text-primary">1,250</p>
-        </div>
-
-        <div className="rounded-xl bg-lightBlue p-4">
-          <p className="text-sm text-gray-700">Posts</p>
-          <p className="mt-2 text-2xl font-bold text-deepBlue2">320</p>
-        </div>
-
-        <div className="rounded-xl bg-mediumBlue p-4 text-white">
-          <p className="text-sm">Engagement</p>
-          <p className="mt-2 text-2xl font-bold">87%</p>
-        </div>
-      </div>
-    </div>
+    <DashboardPageTemplate
+      title="Dashboard Overview"
+      description="Chao mung ban den voi he thong quan tri social dashboard."
+      badge="Operations"
+      actions={<Button size="sm">Create report</Button>}
+      toolbar={{
+        title: 'Quick actions',
+        description: 'Theo doi va xu ly cac tac vu uu tien cao trong ngay.',
+      }}
+      sidebar={<NotificationCenterPanel items={notifications} />}
+    >
+      <KPIOverviewGrid items={kpis} title="Tong quan nhanh" />
+    </DashboardPageTemplate>
   );
 }

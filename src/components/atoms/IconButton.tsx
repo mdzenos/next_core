@@ -1,4 +1,6 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { atomIconButtonClass } from '@/components/atoms/styles';
+import { cn } from '@/utils/cn';
 
 type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
@@ -6,19 +8,13 @@ type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string;
 };
 
-export default function IconButton({
-  children,
-  label,
-  className = '',
-  type = 'button',
-  ...props
-}: IconButtonProps) {
+export default function IconButton({ children, label, className, type = 'button', ...props }: IconButtonProps) {
   return (
     <button
       type={type}
       aria-label={label}
       title={label}
-      className={`inline-flex items-center justify-center rounded-full p-2 transition disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={cn(atomIconButtonClass, className)}
       {...props}
     >
       {children}

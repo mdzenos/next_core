@@ -1,0 +1,20 @@
+[
+  {
+    "id": "p1",
+    "content": "Welcome to NextJS Core mock API.",
+    "author": {
+      "id": "u1",
+      "name": "Admin User",
+      "avatar": "https://i.pravatar.cc/150?img=12"
+    }
+  },
+  {
+    "id": "p2",
+    "content": "Feature-first architecture keeps APIs close to features.",
+    "author": {
+      "id": "u2",
+      "name": "Content Writer",
+      "avatar": "https://i.pravatar.cc/150?img=32"
+    }
+  }
+]

@@ -1,8 +1,8 @@
 // src/app/(public)/auth/register/page.tsx
 import { buildMetadata } from '@/lib/metadata';
-import AuthTemplate from '@/components/templates/AuthTemplate';
-import RegisterForm from '@/components/organisms/Auth/RegisterForm';
-import PublicOnlyGuard from '@/components/guards/PublicOnlyGuard';
+import AuthTemplate from '@/app/(public)/auth/components/AuthTemplate';
+import RegisterForm from '@/app/(public)/auth/components/RegisterForm';
+import PublicOnlyGuard from '@/app/(public)/auth/guards/PublicOnlyGuard';
 
 export const metadata = buildMetadata({
   title: 'Đăng ký',

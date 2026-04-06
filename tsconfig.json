@@ -20,6 +20,7 @@
     ],
     "paths": {
       "@/*": ["./src/*"], // alias src
+      "@/be/*": ["./src/app/(be)/be/*"], // alias backend module in app route group
       "~/*": ["./*"] // alias root project
     }
   },
