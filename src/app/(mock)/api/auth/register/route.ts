@@ -1,3 +1,4 @@
+// src/app/(mock)/api/auth/register/route.ts
 import {
   errorResponse,
   validationErrorResponse,
