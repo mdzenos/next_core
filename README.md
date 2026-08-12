@@ -144,29 +144,27 @@ nextjs_16/
 The project follows a full-stack architecture based on the Next.js App Router.
 
 ```text
-                         Next.js
-                            │
-             ┌──────────────┴──────────────┐
-             │                             │
-          Frontend                      Backend
-             │                             │
-      ┌──────┴──────┐              ┌───────┴────────┐
-      │             │              │                │
-   App Router   Components     Route Handlers   Server Actions
-      │             │              │                │
-      └─────────────┴──────────────┴────────────────┘
-                                    │
-                                    ▼
-                                 Service
-                                    │
-                                    ▼
-                               Repository
-                                    │
-                                    ▼
-                                  Prisma
-                                    │
-                                    ▼
-                               PostgreSQL
+                    NEXT.JS APPLICATION
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+          FRONTEND                    BACKEND
+             │                           │
+     ┌───────┴────────┐        ┌─────────┴─────────┐
+     │                │        │                   │
+   app/          components/  API Routes       server/
+     │                │        │                   │
+     └────────┬───────┘        └─────────┬─────────┘
+              │                          │
+              │                     services
+              │                          │
+              │                     repository
+              │                          │
+              │                        Prisma
+              │                          │
+              └──────────────┬───────────┘
+                             │
+                         PostgreSQL
 ```
 
 ## Layer Responsibilities
