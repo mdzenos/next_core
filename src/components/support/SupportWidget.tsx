@@ -1,8 +1,10 @@
-// nextjs_16/src/components/support/SupportWidget.tsx
 "use client";
 
 import { ChatMessage, matrix } from "@/lib/matrix";
 import { FormEvent, useEffect, useRef, useState } from "react";
+
+const MATRIX_BASE_URL = process.env.NEXT_PUBLIC_MATRIX_BASE_URL?.replace(/\/+$/, "");
+const SUPPORT_SPACE_ID = process.env.NEXT_PUBLIC_SPACE_ID;
 
 const CUSTOMER_STORAGE_KEY = "vnpost_support_customer";
 
@@ -88,7 +90,10 @@ export default function SupportWidget() {
     });
 
     const unsubscribeRoom = matrix.onRoom((room) => {
-      console.log("[FE] Room:", { roomId: room.roomId, membership: room.getMyMembership() });
+      console.log("[FE] Room:", {
+        roomId: room.roomId,
+        membership: room.getMyMembership(),
+      });
 
       if (room.getMyMembership() !== "join") {
         return;
@@ -236,12 +241,28 @@ export default function SupportWidget() {
       return;
     }
 
+    if (!MATRIX_BASE_URL) {
+      setError("Thiếu NEXT_PUBLIC_MATRIX_BASE_URL.");
+      return;
+    }
+
+    if (!SUPPORT_SPACE_ID) {
+      setError("Thiếu NEXT_PUBLIC_SPACE_ID.");
+      return;
+    }
+
     try {
       setError("");
       setMinimized(false);
       setUnreadCount(0);
 
-      localStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify({ fullName: name, phone: phoneNumber }));
+      localStorage.setItem(
+        CUSTOMER_STORAGE_KEY,
+        JSON.stringify({
+          fullName: name,
+          phone: phoneNumber,
+        }),
+      );
 
       setStep("connecting");
 
@@ -255,18 +276,42 @@ export default function SupportWidget() {
       setUserId(currentUserId);
       setMessages([FAKE_MESSAGE]);
 
-      const response = await fetch("/api/support/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fullName: name, phone: phoneNumber, guestUserId: currentUserId }),
+      const supportUrl = `${MATRIX_BASE_URL}/_synapse/client/vnpost_support/request`;
+
+      console.log("[FE] Support request:", {
+        url: supportUrl,
+        fullName: name,
+        phone: phoneNumber,
+        guestUserId: currentUserId,
+        spaceId: SUPPORT_SPACE_ID,
       });
 
-      const result = await response.json();
+      const response = await fetch(supportUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName: name,
+          phone: phoneNumber,
+          guestUserId: currentUserId,
+          spaceId: SUPPORT_SPACE_ID,
+        }),
+      });
 
-      console.log("[FE] Support API:", result);
+      const result = await response.json().catch(() => ({}));
+
+      console.log("[FE] Support API:", {
+        status: response.status,
+        result,
+      });
 
       if (!response.ok || !result.success) {
         throw new Error(result.message ?? "Không thể tạo yêu cầu hỗ trợ.");
+      }
+
+      if (result.roomId) {
+        setRoomId(result.roomId);
       }
 
       setStep("waiting");
@@ -451,13 +496,11 @@ export default function SupportWidget() {
 
           <div className="mt-5">
             <label htmlFor="fullName" className="mb-1.5 block text-sm font-medium text-gray-700">Họ và tên</label>
-
             <input id="fullName" type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Nguyễn Văn A" autoFocus className="w-full rounded-xl border border-gray-300 px-3 py-2.5 outline-none focus:border-blue-500" />
           </div>
 
           <div className="mt-4">
             <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-gray-700">Số điện thoại</label>
-
             <input id="phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="0981234567" className="w-full rounded-xl border border-gray-300 px-3 py-2.5 outline-none focus:border-blue-500" />
           </div>
 
@@ -532,21 +575,12 @@ export default function SupportWidget() {
           {error && <div className="border-t bg-red-50 px-3 py-2 text-xs text-red-600">{error}</div>}
 
           <form onSubmit={sendMessage} className="flex gap-2 border-t bg-white p-3">
-            {/* <label className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-gray-300 text-lg hover:bg-gray-50 ${sendingMedia ? "pointer-events-none opacity-50" : ""}`} title="Gửi ảnh, video, âm thanh hoặc file">
-              📎
-              <input type="file" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar" onChange={sendMedia} disabled={sendingMedia} className="hidden" />
-            </label> */}
-
             <input value={messageInput} onChange={(event) => setMessageInput(event.target.value)} placeholder={sendingMedia ? "Đang gửi file..." : "Nhập tin nhắn..."} disabled={sendingMedia} className="min-w-0 flex-1 rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 disabled:bg-gray-100" />
 
             <button type="submit" disabled={!messageInput.trim() || sendingMedia} className="rounded-xl bg-blue-600 px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">
               Gửi
             </button>
           </form>
-
-          <button type="button" onClick={endChat} className="w-full border-t bg-white px-4 py-2.5 text-xs text-gray-500 hover:text-red-600">
-            Kết thúc hỗ trợ
-          </button>
         </>
       )}
     </div>

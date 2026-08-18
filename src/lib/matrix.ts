@@ -1,8 +1,7 @@
-// nextjs_16/src/lib/matrix.ts
 import type { MatrixClient, Room } from "matrix-js-sdk";
 import { ClientEvent, createClient, RoomEvent } from "matrix-js-sdk";
 
-const MATRIX_BASE_URL = process.env.NEXT_PUBLIC_MATRIX_BASE_URL;
+const MATRIX_BASE_URL = process.env.NEXT_PUBLIC_MATRIX_BASE_URL?.replace(/\/+$/, "");
 
 if (!MATRIX_BASE_URL) {
   throw new Error("Missing NEXT_PUBLIC_MATRIX_BASE_URL");
@@ -51,7 +50,7 @@ class MatrixService {
       body: JSON.stringify({}),
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
     console.log("[Matrix] Guest response:", response.status, {
       user_id: data.user_id,
@@ -67,7 +66,11 @@ class MatrixService {
       throw new Error("Synapse không trả về user_id hoặc access_token.");
     }
 
-    return { userId: data.user_id, accessToken: data.access_token, deviceId: data.device_id };
+    return {
+      userId: data.user_id,
+      accessToken: data.access_token,
+      deviceId: data.device_id,
+    };
   }
 
   private createMatrixClient(session: MatrixSession): MatrixClient {
@@ -91,7 +94,11 @@ class MatrixService {
 
   private registerEvents(client: MatrixClient) {
     client.on(ClientEvent.Sync, (state, previousState, data) => {
-      console.log("[Matrix] SYNC:", { state, previousState, nextBatch: data?.next_batch });
+      console.log("[Matrix] SYNC:", {
+        state,
+        previousState,
+        nextBatch: data?.next_batch,
+      });
 
       this.emitSync(state, previousState);
 
@@ -105,12 +112,20 @@ class MatrixService {
     });
 
     client.on(ClientEvent.Room, (room) => {
-      console.log("[Matrix] ROOM:", { roomId: room.roomId, membership: room.getMyMembership() });
+      console.log("[Matrix] ROOM:", {
+        roomId: room.roomId,
+        membership: room.getMyMembership(),
+      });
+
       this.handleRoom(room);
     });
 
     client.on(RoomEvent.MyMembership, (room, membership, previousMembership) => {
-      console.log("[Matrix] MY MEMBERSHIP:", { roomId: room.roomId, membership, previousMembership });
+      console.log("[Matrix] MY MEMBERSHIP:", {
+        roomId: room.roomId,
+        membership,
+        previousMembership,
+      });
 
       if (membership === "invite") {
         void this.handleInvite(room);
@@ -267,10 +282,13 @@ class MatrixService {
 
     const rooms = this.client.getRooms();
 
-    console.log("[Matrix] All SDK rooms:", rooms.map((room) => ({
-      roomId: room.roomId,
-      membership: room.getMyMembership(),
-    })));
+    console.log(
+      "[Matrix] All SDK rooms:",
+      rooms.map((room) => ({
+        roomId: room.roomId,
+        membership: room.getMyMembership(),
+      })),
+    );
 
     for (const room of rooms) {
       this.handleRoom(room);
@@ -297,7 +315,9 @@ class MatrixService {
 
     try {
       await this.client.joinRoom(room.roomId);
+
       console.log("[Matrix] JOIN SUCCESS:", room.roomId);
+
       this.handleRoom(room);
     } catch (error) {
       console.error("[Matrix] JOIN FAILED:", room.roomId, error);
@@ -334,7 +354,9 @@ class MatrixService {
       console.log("[Matrix] User:", client.getUserId());
       console.log("[Matrix] Guest:", client.isGuest());
 
-      client.startClient({ initialSyncLimit: 20 });
+      client.startClient({
+        initialSyncLimit: 20,
+      });
 
       console.log("[Matrix] Client started.");
       console.log("[Matrix] ====================");
@@ -364,7 +386,9 @@ class MatrixService {
       return [];
     }
 
-    return room.getLiveTimeline().getEvents()
+    return room
+      .getLiveTimeline()
+      .getEvents()
       .map((event) => this.parseMessage(event, room))
       .filter((message): message is ChatMessage => Boolean(message));
   }
@@ -390,7 +414,10 @@ class MatrixService {
       throw new Error("Guest chưa tham gia phòng.");
     }
 
-    console.log("[Matrix] Sending message:", { roomId, body: message });
+    console.log("[Matrix] Sending message:", {
+      roomId,
+      body: message,
+    });
 
     await this.client.sendTextMessage(roomId, message);
   }
@@ -510,6 +537,7 @@ class MatrixService {
 
   onRoom(listener: RoomListener) {
     this.roomListeners.add(listener);
+
     return () => {
       this.roomListeners.delete(listener);
     };
@@ -517,6 +545,7 @@ class MatrixService {
 
   onMessage(listener: MessageListener) {
     this.messageListeners.add(listener);
+
     return () => {
       this.messageListeners.delete(listener);
     };
@@ -524,6 +553,7 @@ class MatrixService {
 
   onSync(listener: SyncListener) {
     this.syncListeners.add(listener);
+
     return () => {
       this.syncListeners.delete(listener);
     };
