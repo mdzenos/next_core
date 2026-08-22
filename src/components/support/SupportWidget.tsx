@@ -273,42 +273,24 @@ export default function SupportWidget() {
     const name = fullName.trim();
     const phoneNumber = phone.trim();
     const closingUserId = userId || matrix.getUserId() || "";
+    const closingRoomId = roomId.trim();
 
-    if (!MATRIX_BASE_URL || !SUPPORT_SPACE_ID || !closingUserId) {
-      console.error("[FE] Cannot close support:", {
-        hasMatrixBaseUrl: Boolean(MATRIX_BASE_URL),
-        hasSpaceId: Boolean(SUPPORT_SPACE_ID),
-        guestUserId: closingUserId,
-      });
+    if (!MATRIX_BASE_URL || !SUPPORT_SPACE_ID || !closingUserId || !closingRoomId) {
+      console.error("[FE] Cannot close support:", { hasMatrixBaseUrl: Boolean(MATRIX_BASE_URL), hasSpaceId: Boolean(SUPPORT_SPACE_ID), guestUserId: closingUserId, roomId: closingRoomId });
       endChat();
       return;
     }
 
     const closeUrl = `${MATRIX_BASE_URL}/_synapse/client/vnpost_support/request`;
-    const closeBody = {
-      fullName: name,
-      phone: phoneNumber,
-      guestUserId: closingUserId,
-      spaceId: SUPPORT_SPACE_ID,
-      action: "close",
-    };
+    const closeBody = { fullName: name, phone: phoneNumber, guestUserId: closingUserId, spaceId: SUPPORT_SPACE_ID, roomId: closingRoomId, action: "close" };
 
     console.log("[FE] Close support request:", { url: closeUrl, ...closeBody });
 
     try {
-      const response = await fetch(closeUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(closeBody),
-      });
-
+      const response = await fetch(closeUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(closeBody) });
       const result = await response.json().catch(() => ({}));
-
       console.log("[FE] Close support API:", { status: response.status, result });
-
-      if (!response.ok || !result.success) {
-        console.error("[FE] Close support API failed:", result);
-      }
+      if (!response.ok || !result.success) console.error("[FE] Close support API failed:", result);
     } catch (error) {
       console.error("[FE] Close support request failed:", error);
     } finally {
