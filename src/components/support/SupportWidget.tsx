@@ -194,7 +194,7 @@ export default function SupportWidget() {
 
       setUserId(currentUserId);
 
-      const supportUrl = `http://localhost:8008/_synapse/client/vnpost_support/request`;
+      const supportUrl = `${MATRIX_BASE_URL}/_synapse/client/vnpost_support/request`;
       const supportBody = { fullName: name, phone: phoneNumber, guestUserId: currentUserId, spaceId: SUPPORT_SPACE_ID };
 
       console.log("[FE] Support request:", { url: supportUrl, ...supportBody });
@@ -284,7 +284,7 @@ export default function SupportWidget() {
       return;
     }
 
-    const closeUrl = `http://localhost:8008/_synapse/client/vnpost_support/request`;
+    const closeUrl = `${MATRIX_BASE_URL}/_synapse/client/vnpost_support/request`;
     const closeBody = {
       fullName: name,
       phone: phoneNumber,
