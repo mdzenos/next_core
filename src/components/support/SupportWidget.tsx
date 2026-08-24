@@ -42,21 +42,20 @@ export default function SupportWidget() {
     const unsubscribeSync = matrix.onSync((state) => {
       console.log("[FE] Sync state:", state);
       if (state !== "PREPARED") return;
-
       const rooms = matrix.getJoinedRooms();
       console.log("[FE] Joined rooms:", rooms.map((room) => room.roomId));
-      if (rooms.length === 0) return;
-
-      const room = rooms[0];
+      if (!rooms.length) return;
+      const matchedRoom = roomId ? rooms.find((room) => room.roomId === roomId) : null;
+      const room = matchedRoom || rooms[0];
       setRoomId(room.roomId);
-      setStep("chat");
       setMessages(matrix.getRoomMessages(room.roomId));
+      setStep("chat");
     });
 
     const unsubscribeRoom = matrix.onRoom((room) => {
       console.log("[FE] Room:", { roomId: room.roomId, membership: room.getMyMembership() });
       if (room.getMyMembership() !== "join") return;
-
+      if (roomId && room.roomId !== roomId) return;
       setRoomId(room.roomId);
       setMessages(matrix.getRoomMessages(room.roomId));
       setStep("chat");
@@ -64,14 +63,9 @@ export default function SupportWidget() {
 
     const unsubscribeMessage = matrix.onMessage((message) => {
       console.log("[FE] Message:", message);
-
       setMessages((current) => current.some((item) => item.eventId === message.eventId) ? current : [...current, message]);
-
-      if (message.sender !== matrix.getUserId() && minimized) {
-        setUnreadCount((current) => current + 1);
-      }
-
-      setStep("chat");
+      if (message.sender !== matrix.getUserId() && minimized) setUnreadCount((current) => current + 1);
+      if (!roomId || message.roomId === roomId) setStep("chat");
     });
 
     return () => {
@@ -79,7 +73,7 @@ export default function SupportWidget() {
       unsubscribeRoom();
       unsubscribeMessage();
     };
-  }, [minimized]);
+  }, [minimized, roomId]);
 
   useEffect(() => {
     const element = messagesRef.current;
@@ -92,18 +86,14 @@ export default function SupportWidget() {
 
     async function loadMedia() {
       const mediaMessages = messages.filter((message) => message.type !== "text" && message.url);
-
       for (const message of mediaMessages) {
         if (!message.url || mediaUrlsRef.current[message.eventId]) continue;
-
         try {
           const blobUrl = await matrix.getMediaBlob(message.url);
-
           if (cancelled) {
             URL.revokeObjectURL(blobUrl);
             return;
           }
-
           mediaUrlsRef.current[message.eventId] = blobUrl;
           setMediaUrls((current) => ({ ...current, [message.eventId]: blobUrl }));
         } catch (error) {
@@ -113,7 +103,6 @@ export default function SupportWidget() {
     }
 
     void loadMedia();
-
     return () => {
       cancelled = true;
     };
@@ -153,7 +142,6 @@ export default function SupportWidget() {
 
   async function startSupport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const name = fullName.trim();
     const phoneNumber = phone.trim();
 
@@ -161,17 +149,14 @@ export default function SupportWidget() {
       setError("Vui lòng nhập họ tên.");
       return;
     }
-
     if (!phoneNumber) {
       setError("Vui lòng nhập số điện thoại.");
       return;
     }
-
     if (!MATRIX_BASE_URL) {
       setError("Thiếu NEXT_PUBLIC_MATRIX_BASE_URL.");
       return;
     }
-
     if (!SUPPORT_SPACE_ID) {
       setError("Thiếu NEXT_PUBLIC_SPACE_ID.");
       return;
@@ -181,7 +166,6 @@ export default function SupportWidget() {
       setError("");
       setMinimized(false);
       setUnreadCount(0);
-
       localStorage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify({ fullName: name, phone: phoneNumber }));
       setStep("connecting");
       setMessages([]);
@@ -189,7 +173,6 @@ export default function SupportWidget() {
 
       const client = await matrix.startAsGuest();
       const currentUserId = client.getUserId();
-
       if (!currentUserId) throw new Error("Không lấy được Matrix user ID.");
 
       setUserId(currentUserId);
@@ -206,18 +189,19 @@ export default function SupportWidget() {
       });
 
       const result = await response.json().catch(() => ({}));
-
       console.log("[FE] Support API:", { status: response.status, result });
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message ?? "Không thể tạo yêu cầu hỗ trợ.");
-      }
+      if (!response.ok || !result.success) throw new Error(result.message ?? "Không thể tạo yêu cầu hỗ trợ.");
 
       if (result.roomId) setRoomId(result.roomId);
-
       setStep("waiting");
     } catch (error) {
       console.error("[FE] Start support failed:", error);
+      try {
+        await matrix.logout();
+      } catch (logoutError) {
+        console.warn("[FE] Guest logout after start failure failed:", logoutError);
+      }
       matrix.stop();
       setError(error instanceof Error ? error.message : "Không thể bắt đầu hỗ trợ.");
       setStep("customer");
@@ -226,11 +210,8 @@ export default function SupportWidget() {
 
   async function sendMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const body = messageInput.trim();
-
     if (!body) return;
-
     if (!roomId) {
       setError("Chưa có phòng chat.");
       return;
@@ -249,9 +230,7 @@ export default function SupportWidget() {
   async function sendMedia(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
-
     if (!file) return;
-
     if (!roomId) {
       setError("Chưa có phòng chat.");
       return;
@@ -269,37 +248,47 @@ export default function SupportWidget() {
     }
   }
 
-  async function closeSupport() {
+  function sendCloseRequest(roomIdValue: string, guestUserIdValue: string, name: string, phoneNumber: string) {
+    if (!MATRIX_BASE_URL || !SUPPORT_SPACE_ID || !guestUserIdValue || !roomIdValue) {
+      console.error("[FE] Cannot close support:", { hasMatrixBaseUrl: Boolean(MATRIX_BASE_URL), hasSpaceId: Boolean(SUPPORT_SPACE_ID), guestUserId: guestUserIdValue, roomId: roomIdValue });
+      return;
+    }
+
+    const closeUrl = `${MATRIX_BASE_URL}/_synapse/client/vnpost_support/request`;
+    const closeBody = { fullName: name, phone: phoneNumber, guestUserId: guestUserIdValue, spaceId: SUPPORT_SPACE_ID, roomId: roomIdValue, action: "close" };
+
+    console.log("[FE] Close support request:", { url: closeUrl, ...closeBody });
+
+    void fetch(closeUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(closeBody),
+      keepalive: true,
+    }).then(async (response) => {
+      const result = await response.json().catch(() => ({}));
+      console.log("[FE] Close support API:", { status: response.status, result });
+      if (!response.ok || !result.success) console.error("[FE] Close support API failed:", result);
+    }).catch((error) => {
+      console.error("[FE] Close support request failed:", error);
+    });
+  }
+
+  function closeSupport() {
     const name = fullName.trim();
     const phoneNumber = phone.trim();
     const closingUserId = userId || matrix.getUserId() || "";
     const closingRoomId = roomId.trim();
 
-    if (!MATRIX_BASE_URL || !SUPPORT_SPACE_ID || !closingUserId || !closingRoomId) {
-      console.error("[FE] Cannot close support:", { hasMatrixBaseUrl: Boolean(MATRIX_BASE_URL), hasSpaceId: Boolean(SUPPORT_SPACE_ID), guestUserId: closingUserId, roomId: closingRoomId });
-      endChat();
-      return;
-    }
-
-    const closeUrl = `${MATRIX_BASE_URL}/_synapse/client/vnpost_support/request`;
-    const closeBody = { fullName: name, phone: phoneNumber, guestUserId: closingUserId, spaceId: SUPPORT_SPACE_ID, roomId: closingRoomId, action: "close" };
-
-    console.log("[FE] Close support request:", { url: closeUrl, ...closeBody });
-
-    try {
-      const response = await fetch(closeUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(closeBody) });
-      const result = await response.json().catch(() => ({}));
-      console.log("[FE] Close support API:", { status: response.status, result });
-      if (!response.ok || !result.success) console.error("[FE] Close support API failed:", result);
-    } catch (error) {
-      console.error("[FE] Close support request failed:", error);
-    } finally {
-      endChat();
-    }
+    sendCloseRequest(closingRoomId, closingUserId, name, phoneNumber);
+    endChat();
   }
 
   function endChat() {
-    matrix.logout();
+    try {
+      void matrix.logout();
+    } catch (error) {
+      console.warn("[FE] Matrix logout failed:", error);
+    }
 
     Object.values(mediaUrlsRef.current).forEach((url) => URL.revokeObjectURL(url));
     mediaUrlsRef.current = {};
@@ -319,14 +308,10 @@ export default function SupportWidget() {
   function renderMedia(message: ChatMessage) {
     const mediaUrl = mediaUrls[message.eventId];
 
-    if (!mediaUrl) {
-      return <div className="flex min-h-24 min-w-32 items-center justify-center rounded-xl bg-gray-100 px-4 text-xs text-gray-400">Đang tải...</div>;
-    }
-
+    if (!mediaUrl) return <div className="flex min-h-24 min-w-32 items-center justify-center rounded-xl bg-gray-100 px-4 text-xs text-gray-400">Đang tải...</div>;
     if (message.type === "image") return <img src={mediaUrl} alt={message.filename ?? "Ảnh"} className="max-h-72 max-w-full rounded-xl object-contain" />;
     if (message.type === "video") return <video src={mediaUrl} controls className="max-h-72 max-w-full rounded-xl" />;
     if (message.type === "audio") return <audio src={mediaUrl} controls className="max-w-full" />;
-
     return <a href={mediaUrl} download={message.filename ?? "file"} className="block rounded-xl bg-gray-100 px-4 py-3 text-sm text-blue-600 hover:bg-gray-200">Tải {message.filename ?? "tệp"}</a>;
   }
 
@@ -355,7 +340,6 @@ export default function SupportWidget() {
             <div className="text-xs text-blue-100">{step === "chat" ? "Đang trò chuyện" : hasSupportSession ? "Đang chờ hỗ trợ" : "Vietnam Post"}</div>
           </div>
         </div>
-
         <div className="flex items-center gap-1">
           <button type="button" onClick={minimizeWidget} aria-label="Thu nhỏ cuộc trò chuyện" className="flex h-8 w-8 items-center justify-center rounded-full text-xl hover:bg-white/20">−</button>
           <button type="button" onClick={closeSupport} aria-label="Kết thúc hỗ trợ" className="flex h-8 w-8 items-center justify-center rounded-full text-xl hover:bg-white/20">×</button>
@@ -374,19 +358,15 @@ export default function SupportWidget() {
       {step === "customer" && (
         <form onSubmit={startSupport} className="p-5">
           <h2 className="text-lg font-semibold">Thông tin khách hàng</h2>
-
           <div className="mt-5">
             <label htmlFor="fullName" className="mb-1.5 block text-sm font-medium text-gray-700">Họ và tên</label>
             <input id="fullName" type="text" value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Nguyễn Văn A" autoFocus className="w-full rounded-xl border border-gray-300 px-3 py-2.5 outline-none focus:border-blue-500" />
           </div>
-
           <div className="mt-4">
             <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-gray-700">Số điện thoại</label>
             <input id="phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="0981234567" className="w-full rounded-xl border border-gray-300 px-3 py-2.5 outline-none focus:border-blue-500" />
           </div>
-
           {error && <div className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-600">{error}</div>}
-
           <button type="submit" className="mt-5 w-full rounded-xl bg-blue-600 px-4 py-3 font-medium text-white">Bắt đầu</button>
         </form>
       )}
@@ -421,7 +401,6 @@ export default function SupportWidget() {
             ) : (
               messages.map((message) => {
                 const own = message.sender === userId;
-
                 return (
                   <div key={message.eventId} className={`mb-3 flex ${own ? "justify-end" : "justify-start"}`}>
                     <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm ${own ? "rounded-br-md bg-blue-600 text-white" : "rounded-bl-md bg-white text-gray-900 shadow-sm"}`}>
@@ -433,11 +412,13 @@ export default function SupportWidget() {
               })
             )}
           </div>
-
           {error && <div className="border-t bg-red-50 px-3 py-2 text-xs text-red-600">{error}</div>}
-
           <form onSubmit={sendMessage} className="flex gap-2 border-t bg-white p-3">
             <input value={messageInput} onChange={(event) => setMessageInput(event.target.value)} placeholder={sendingMedia ? "Đang gửi file..." : "Nhập tin nhắn..."} disabled={sendingMedia} className="min-w-0 flex-1 rounded-xl border border-gray-300 px-3 py-2.5 text-sm outline-none focus:border-blue-500 disabled:bg-gray-100" />
+            {/* <label className={`flex cursor-pointer items-center justify-center rounded-xl border border-gray-300 px-3 text-sm ${sendingMedia ? "cursor-not-allowed opacity-50" : "hover:bg-gray-50"}`}>
+              📎
+              <input type="file" className="hidden" disabled={sendingMedia || !roomId} onChange={sendMedia} accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar" />
+            </label> */}
             <button type="submit" disabled={!messageInput.trim() || sendingMedia} className="rounded-xl bg-blue-600 px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50">Gửi</button>
           </form>
         </>
